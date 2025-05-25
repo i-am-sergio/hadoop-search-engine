@@ -1,5 +1,4 @@
-// src/App.tsx
-import SearchBox from './components/SearchBox';
+import SearchEngineView from './components/SearchEngineView';
 import './index.css';
 import { extractCocoClassesFromText } from './utils/searchProcessor';
 
@@ -12,27 +11,9 @@ function App() {
 
   return (
     <div className="App">
-      <SearchBox onSearch={handleSearch} />
+      <SearchEngineView onSearch={handleSearch} />
     </div>
   );
 }
 
 export default App;
-
-/*import SearchBox from './components/SearchBox';
-import './index.css'; 
-
-function App() {
-  const handleSearch = (query: string) => {
-    console.log('Searching for:', query);
-    alert(`Simulating search for: "${query}"`);
-  };
-
-  return (
-    <div className="App">
-      <SearchBox onSearch={handleSearch} />
-    </div>
-  );
-}
-
-export default App;*/

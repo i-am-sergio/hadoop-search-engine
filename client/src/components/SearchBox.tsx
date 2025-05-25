@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
 import SvgIcon from './SvgIcon'; // Import our SVG wrapper component
-
-// Import your downloaded SVG icons (ensure paths are correct for your project)
 import SearchIcon from '../assets/search.svg';
-// import MicIcon from '../assets/icons/mic.svg';
-// import CameraAltIcon from '../assets/icons/camera_alt.svg';
-// import AppsIcon from '../assets/icons/apps.svg';
 import AccountCircleIcon from '../assets/account_circle.svg';
 
 interface SearchBoxProps {
@@ -24,12 +19,8 @@ const SearchBox: React.FC<SearchBoxProps> = ({ onSearch }) => {
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-white text-gray-800 font-sans pt-5">
-      {/* Top Bar - Minimalist Google style */}
       <div className="w-full max-w-[900px] flex justify-between items-center px-5 py-2 box-border">
         <div className="text-2xl font-bold flex items-center">
-          {/* Gemini Gradient 'G' using Tailwind's custom gradient utility (requires plugin or manual setup) */}
-          {/* For true gradient text in Tailwind without plugins, you might need a custom utility or span */}
-          {/* For simplicity, let's approximate or use a trick */}
           <span
             className="text-4xl font-bold mr-1"
             style={{
@@ -43,7 +34,6 @@ const SearchBox: React.FC<SearchBoxProps> = ({ onSearch }) => {
           exo Corp
         </div>
         <div className="flex items-center space-x-4">
-          {/* <SvgIcon src={AppsIcon} alt="Apps" className="cursor-pointer p-2 rounded-full hover:bg-gray-100" width={24} height={24} /> */}
           <SvgIcon src={AccountCircleIcon} alt="Account" className="cursor-pointer p-1 rounded-full hover:bg-gray-100" width={32} height={32} />
         </div>
       </div>
@@ -60,8 +50,6 @@ const SearchBox: React.FC<SearchBoxProps> = ({ onSearch }) => {
               placeholder="Search or ask Gemini..."
               className="flex-grow border-none outline-none text-base px-2 bg-transparent"
             />
-            {/* <SvgIcon src={MicIcon} alt="Voice Search" className="text-gray-500 cursor-pointer mx-1" width={20} height={20} />
-            <SvgIcon src={CameraAltIcon} alt="Image Search" className="text-gray-500 cursor-pointer mx-1" width={20} height={20} /> */}
           </div>
           {/* Hidden submit button to allow form submission on Enter */}
           <button type="submit" className="hidden"></button>
