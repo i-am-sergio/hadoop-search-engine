@@ -1,15 +1,17 @@
-import SearchBox from './components/SearchBox';
-import './index.css'; 
+import SearchEngineView from './components/SearchEngineView';
+import './index.css';
+import { extractCocoClassesFromText } from './utils/searchProcessor';
 
 function App() {
   const handleSearch = (query: string) => {
-    console.log('Searching for:', query);
-    alert(`Simulating search for: "${query}"`);
+    const resultado = extractCocoClassesFromText(query);
+    console.log("Resultado:", resultado);
+    alert(`Objetos detectados: ${resultado.join(", ")}`);
   };
 
   return (
     <div className="App">
-      <SearchBox onSearch={handleSearch} />
+      <SearchEngineView onSearch={handleSearch} />
     </div>
   );
 }
