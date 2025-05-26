@@ -4,12 +4,18 @@ import SvgIcon from './SvgIcon'; // Assuming SvgIcon is a wrapper for your SVG a
 
 import AccountCircleIcon from '../assets/account_circle.svg';
 import SampleMiniature from '../assets/sample_miniature.png'
+import VideoInformation from './VideoInformation';
 
 interface SearchEngineViewProps {
   onSearch: (query: string) => void;
 }
 
 const SearchEngineView: React.FC<SearchEngineViewProps> = ({ onSearch }) => {
+  const [selectedVideo, setSelectedVideo] = useState<null | {
+    title: string;
+    description: string;
+  }>(null);
+
   const [hasSearched, setHasSearched] = useState(false);
   const [currentQuery, setCurrentQuery] = useState(''); // To keep track of the last searched query
 
@@ -78,18 +84,22 @@ const SearchEngineView: React.FC<SearchEngineViewProps> = ({ onSearch }) => {
           <div className="w-full max-w-3xl mt-8">
             <h2 className="text-xl font-semibold mb-4 text-gray-100">Resultados de video para "{currentQuery}"</h2>
             <div className="space-y-6">
+              {/*aqui empieza*/}
               {videoResults.map(video => (
-                // Contenedor principal de cada resultado, usando flex
-                <div key={video.id} className="flex bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-all duration-200 hover:bg-gray-700 cursor-pointer">
-                  {/* Div padre para la imagen con ancho fijo y relación de aspecto */}
+                <div
+                  key={video.id}
+                  onClick={() =>
+                    setSelectedVideo({ title: video.title, description: video.description })
+                  }
+                  className="flex bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-all duration-200 hover:bg-gray-700 cursor-pointer"
+                >
                   <div className="w-1/3 flex-shrink-0 aspect-video bg-gray-700 overflow-hidden">
                     <img
                       src={video.imageUrl}
                       alt={video.title}
-                      className="w-full h-full object-cover" // La imagen se adapta completamente al div padre
+                      className="w-full h-full object-cover"
                     />
                   </div>
-                  {/* Div para el contenido de texto, toma el resto del espacio */}
                   <div className="w-2/3 p-4 flex flex-col justify-center">
                     <h3 className="text-lg font-medium text-[#5dcf7b] mb-1">{video.title}</h3>
                     <p className="text-gray-300 text-sm mb-2 line-clamp-2">{video.description}</p>
@@ -97,6 +107,13 @@ const SearchEngineView: React.FC<SearchEngineViewProps> = ({ onSearch }) => {
                   </div>
                 </div>
               ))}
+              {selectedVideo && (
+                <VideoInformation
+                  title={selectedVideo.title}
+                  description={selectedVideo.description}
+                  onClose={() => setSelectedVideo(null)}
+                />
+              )}
             </div>
           </div>
         )}
