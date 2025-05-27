@@ -1,4 +1,4 @@
-# Informe de Proyecto: Motor de Búsqueda usando Hadoop
+# Informe de Proyecto: Motor de Búsqueda usando Hadoop 
 
 **Curso:** Big Data  
 **Proyecto:** Motor de Búsqueda Distribuido con Hadoop y algoritmos: índice invertido y PageRank  
@@ -29,11 +29,39 @@ Estos archivos están inspirados en el dataset **VIRAT Video Dataset** (https://
 
 ### 2.2 Proceso de Generación de Datos Sintéticos
 
-> *Aquí explicamos cómo se generaron datos similares si no se usaron directamente los originales. Por ejemplo, scripts en Python para alterar marcas de tiempo, densidad de eventos, o para combinar archivos.*
+Para simular mayor volumen y diversidad se desarrollaron scripts en Python y TypeScript:
 
-### 2.3 Carga al HDFS
+- **Python (`generate.py`)**: genera N archivos `camera_data_i.json` con campos:
+  - `camera_id`, `location`, `priority`, `video_file`, `date`, `object_counts`
+  - Cada JSON anida datos bajo la clave con el nombre del archivo.  
+- **Normalización de etiquetas**:
+  - Tabla hash Español→Inglés y singularización en TypeScript:
+    ```typescript
+    const hashES_EN: {[key:string]:string} = {
+      "personas":   "person",
+      "autos":      "car",
+      "bicicletas": "bicycle",
+      // …
+    };
+    resultado = tokens.map(t => hashES_EN[t.toLowerCase()] || t.toLowerCase());
+    ```
+- **Filtrado de COCO**: se consultó la lista oficial de objetos en  
+  https://github.com/ultralytics/yolov5/blob/master/data/coco.yaml  
 
-Se cargaron los datos al Hadoop Distributed File System (HDFS) usando comandos CLI:
+---
+
+### 2.3 Fuentes de Datos Adicionales
+
+Además del dataset VIRAT, se incorporaron dos colecciones de Kaggle:
+
+- **Smart-City CCTV Violence Detection Dataset (SCVD)**  
+  https://www.kaggle.com/datasets/toluwaniaremu/smartcity-cctv-violence-detection-dataset-scvd  
+- **CCTV Action Recognition Dataset**  
+  https://www.kaggle.com/datasets/jonathannield/cctv-action-recognition-dataset  
+
+---
+
+### 2.4 Carga al HDFS
 
 ```bash
 hdfs dfs -mkdir -p /user/hadoop/input
@@ -41,13 +69,15 @@ hdfs dfs -put cam_01_entrada_principal_2024-04-13.json /user/hadoop/input
 hdfs dfs -put cam_02_pasillo_b_2024-04-13.json /user/hadoop/input
 hdfs dfs -put cam_03_bicicleteros_2024-04-13.json /user/hadoop/input
 hdfs dfs -ls /user/hadoop/input
-```
+````
 
 ---
 
-### 2.4 Instalación y Configuración del Clúster Hadoop
+## 3. Configuración del Clúster Hadoop
 
-Se configuró un clúster Hadoop con cuatro nodos, cada uno con Ubuntu y Java 8:
+### 3.1 Topología y preparación
+
+Clúster de cuatro nodos con Ubuntu y Java 8:
 
 | IP           | Hostname      |
 | ------------ | ------------- |
@@ -56,7 +86,7 @@ Se configuró un clúster Hadoop con cuatro nodos, cada uno con Ubuntu y Java 8:
 | 10.7.134.197 | paul (master) |
 | 10.7.135.212 | aldo-nitro    |
 
-#### 2.4.1 Instalación básica
+Instalación básica y SSH sin contraseña:
 
 ```bash
 sudo apt update
@@ -68,41 +98,26 @@ ssh-keygen -t rsa
 cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 ```
 
-Descarga e instalación de Hadoop 3.3.6:
+Descarga e instalación de Hadoop 3.3.6, variables en `~/.bashrc`, formateo y arranque:
 
 ```bash
 wget https://dlcdn.apache.org/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz
 tar xzf hadoop-3.3.6.tar.gz
 mv hadoop-3.3.6 hadoop
-```
 
-Variables de entorno en `~/.bashrc`:
-
-```bash
-export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-export HADOOP_HOME=/home/hadoop/hadoop
-export HADOOP_INSTALL=$HADOOP_HOME
-export HADOOP_MAPRED_HOME=$HADOOP_HOME
-export HADOOP_COMMON_HOME=$HADOOP_HOME
-export HADOOP_HDFS_HOME=$HADOOP_HOME
-export HADOOP_YARN_HOME=$HADOOP_HOME
-export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
-export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin
-export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"
+# ~/.bashrc exports...
 source ~/.bashrc
-```
 
-Formato del NameNode e inicio del clúster:
-
-```bash
 hdfs namenode -format
 start-all.sh
 yarn node -list
 ```
 
-#### 2.4.2 Configuración de XML básicos
+---
 
-##### `core-site.xml`
+### 3.2 Configuración XML
+
+#### `core-site.xml`
 
 ```xml
 <configuration>
@@ -117,7 +132,7 @@ yarn node -list
 </configuration>
 ```
 
-##### `hdfs-site.xml`
+#### `hdfs-site.xml`
 
 ```xml
 <configuration>
@@ -156,7 +171,7 @@ yarn node -list
 </configuration>
 ```
 
-##### `mapred-site.xml`
+#### `mapred-site.xml`
 
 ```xml
 <configuration>
@@ -187,7 +202,7 @@ yarn node -list
 </configuration>
 ```
 
-##### `yarn-site.xml`
+#### `yarn-site.xml`
 
 ```xml
 <configuration>
@@ -220,116 +235,116 @@ yarn node -list
 
 ---
 
-### 2.5 Procesamiento de Video con YOLOv5
+## 4. Procesamiento de Video con YOLO
 
-Se utilizó un modelo preentrenado YOLOv5s para detectar objetos en video y generar reportes JSON por intervalos de 10 segundos.
+### 4.1 YOLOv5 en Python
 
 ```python
-import cv2
-import torch
+import cv2, torch, json
 from collections import defaultdict
 from datetime import timedelta
-import json
 
-model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
-TARGET_OBJECTS = {'person', 'backpack', 'car'}
-cap = cv2.VideoCapture('video.mp4')
+model = torch.hub.load('ultralytics/yolov5','yolov5s',pretrained=True)
+TARGET={'person','backpack','car'}
+cap=cv2.VideoCapture('video.mp4')
+fps=cap.get(cv2.CAP_PROP_FPS)
+results=defaultdict(lambda:defaultdict(int))
 
-fps = cap.get(cv2.CAP_PROP_FPS)
-timeslot_results = defaultdict(lambda: defaultdict(int))
+def slot(sec):
+  s=int(sec//10)*10; e=s+10
+  return f"{str(timedelta(seconds=s))[:-3]}-{str(timedelta(seconds=e))[:-3]}"
 
-def get_timeslot(sec):
-    start = int(sec // 10) * 10
-    end = start + 10
-    return f"{str(timedelta(seconds=start))[:-3]}-{str(timedelta(seconds=end))[:-3]}"
-
-frame_idx = 0
+i=0
 while True:
-    ret, frame = cap.read()
-    if not ret: break
-    t = frame_idx / fps
-    slot = get_timeslot(t)
-    results = model(frame)
-    for *_, conf, cls in results.xyxy[0]:
-        label = results.names[int(cls)]
-        if label in TARGET_OBJECTS:
-            timeslot_results[slot][label] += 1
-    frame_idx += 1
-
+  ret,frm=cap.read(); 
+  if not ret: break
+  t=i/fps; sl=slot(t)
+  for *_,conf,cls in model(frm).xyxy[0]:
+    lbl=model.names[int(cls)]
+    if lbl in TARGET: results[sl][lbl]+=1
+  i+=1
 cap.release()
-output = {"timeslots": [{"hour": h, "object_counts": dict(c)} for h, c in sorted(timeslot_results.items())]}
-with open("output.json", "w") as f:
-    json.dump(output, f, indent=4)
+out={"timeslots":[{"hour":h,"object_counts":dict(c)} for h,c in sorted(results.items())]}
+with open("output.json","w") as f: json.dump(out,f,indent=4)
 ```
 
 ---
 
-## 3. Implementación de Algoritmos
+### 4.2 YOLOv8 Distribuido con Java + Streaming
 
-### 3.1 Índice Invertido
+```bash
+# Subir scripts y modelo
+hdfs dfs -mkdir -p /user/hadoop/scripts /user/hadoop/models
+hdfs dfs -put process_video.py /user/hadoop/scripts/
+hdfs dfs -put yolov8n.pt      /user/hadoop/models/
 
-* **Principios teóricos:** Explicación breve.
-* **Implementación MapReduce:** Descripción de las clases Mapper y Reducer.
-* **Formato clave-valor:** `<palabra, documento>` → lista de posiciones.
-* **Almacenamiento:** Resultado en HDFS en `/user/hadoop/inverted_index`.
+# Listar videos en HDFS
+hdfs dfs -ls -R /videos | awk '$8~/.mp4$/{print $8}' > videos_list.txt
+hdfs dfs -put videos_list.txt /user/hadoop/
 
-### 3.2 PageRank
-
-* **Descripción del algoritmo:** Ecuación iterativa.
-* **Adaptación a JSON:** Extracción de enlaces entre “documentos” del dataset.
-* **Iteraciones MapReduce:** Control de convergencia.
-* **Salida:** Puntuaciones en `/user/hadoop/pagerank`.
-
----
-
-## 4. Arquitectura del Motor de Búsqueda
-
-### 4.1 Diagrama General
-
-*Aquí insertar diagrama (por ejemplo, con draw\.io) que muestre flujo:*  
-Ingreso → HDFS → MapReduce (Índice Invertido & PageRank) → Almacenamiento → Interfaz Web/API
-
-### 4.2 Componentes Principales
-
-* **Carga en HDFS**
-* **Job de Índice Invertido (MapReduce)**
-* **Job de PageRank (MapReduce)**
-* **Servicio Web / Interfaz de Búsqueda**
+# Ejecutar Hadoop Streaming con Java mapper
+hadoop jar /usr/lib/hadoop-mapreduce/hadoop-streaming-3.3.6.jar \
+  -files /user/hadoop/scripts/process_video.py \
+  -input  /user/hadoop/videos_list.txt \
+  -output /user/hadoop/output_jsons_yolo \
+  -mapper "java -jar VideoProcessor.jar" \
+  -numReduceTasks 0
+```
 
 ---
 
-## 5. Interfaz del Motor de Búsqueda
+## 5. Implementación de Algoritmos
 
-* **Tecnologías:** Flask + React (o Node.js + Express)
-* **Funcionalidades:**
-  * Búsqueda por palabra clave
-  * Orden por puntuación PageRank
-  * Paginación de resultados
-* **Integración:**
-  * Conexión al NameNode para leer índices
-  * Llamadas a jobs en segundo plano si es necesario
+### 5.1 Índice Invertido
 
----
+* **Teoría:** Indexa cada palabra con documentos y posiciones.
+* **MapReduce:**
 
-## 6. Desafíos y Problemas Encontrados
+  * *Mapper*: tokeniza JSON y emite `<palabra, doc>`.
+  * *Reducer*: agrega listas de documentos/posiciones.
+* **Salida:** `/user/hadoop/inverted_index` en HDFS.
 
-* **Configuración SSH y claves:** Problemas de permisos en nodos esclavos.
-* **MapReduce lento:** Tiempo alto (≈4 min) para archivos >1 GB; se optimizó con mayores buffers y bloques más grandes.
-* **Convergencia de PageRank:** Ajuste de número de iteraciones vs. umbral de tolerancia.
-* **Integración de YOLOv5:** Dependencias de PyTorch en nodos no preparados; se dockerizó la etapa de detección.
-* **Interfaz:** Retardo en consultas concurrentes; se consideró caching de índices en memoria.
+### 5.2 PageRank
+
+* **Algoritmo:** Iteraciones de PageRank adaptadas a enlaces inferidos en JSON.
+* **MapReduce:** Cada iteración se ejecuta como job; se detiene al converger o al alcanzar N iteraciones.
+* **Salida:** `/user/hadoop/pagerank` con puntuaciones finales.
 
 ---
 
-## 7. Conclusiones
+## 6. Interfaz del Motor de Búsqueda
 
-Se logró un motor de búsqueda distribuido funcional que indexa documentos JSON y ordena resultados según relevancia PageRank. Aprendizajes clave incluyeron la configuración de un clúster Hadoop real, ajustes de rendimiento para grandes volúmenes y la integración de análisis de video con YOLOv5. Futuras mejoras: escalabilidad dinámica y balanceo de carga avanzado.
+* **Frontend:** React + TypeScript.
+* **`SearchEngineView.tsx`**: lista resultados y maneja estado `modalVideo`.
+* **`VideoInformation.tsx`** (modal): muestra `VideoPlayer.tsx` y panel de metadatos.
+* **`VideoPlayer.tsx`**: reproductor `<video>` para `.mp4`.
+* **Git Flow:** ramas `feature-video`, merges con `main` mediante `git pull origin <rama>`.
 
 ---
 
-## 8. Anexos
+## 7. Desafíos y Problemas Encontrados
 
-* **Comandos Hadoop:** Lista completa de CLI utilizadas.
-* **Fragmentos de código:** Mappers, Reducers, script YOLOv5.
-* **Capturas de pantalla:** Resource Manager, logs de job history.
-* **Tiempos de ejecución:** Comparativa antes/después de optimizaciones.
+* **Firewall/VPN:** bloqueo SSH en interfaz `ham0` de Hamachi; resuelto con `firewall-cmd --add-interface=ham0`.
+* **Generación sintética:** ajustes en scripts Python/TS para normalizar etiquetas y anidar claves.
+* **Hadoop Streaming:** falta de shebang y permisos `chmod +x` en mappers Python; mpɡ→mp4 para compatibilidad.
+* **Java Streaming:** mapper Java no encontraba scripts hasta corregir rutas HDFS.
+* **Race conditions:** acceso simultáneo a mismas rutas en HDFS; mitigado con listas por nodo.
+* **Escalabilidad:** Raspberry Pi falló bajo carga; se requiere ajustar `yarn.nodemanager.resource.memory-mb`.
+* **Ramas Git:** múltiples merges tras pushes en `main`, `aldo`, `feature-video`.
+
+---
+
+## 8. Conclusiones
+
+Se desarrolló un motor de búsqueda distribuido funcional, combinando índices invertidos, PageRank y detección de objetos en video con YOLO. Se configuró un clúster Hadoop real, se optimizaron procesos MapReduce y se integró análisis avanzado de video de manera distribuida. Futuras mejoras: escalabilidad dinámica, balanceo de carga y refinamiento de la interfaz.
+
+---
+
+## 9. Anexos
+
+* **Comandos Hadoop** (CLI).
+* **Scripts Python/Java/TS** completos.
+* **Capturas** de Resource Manager, terminales y Discord (logs clave).
+* **Tabla de tiempos** antes vs. después de optimizaciones.
+
+
