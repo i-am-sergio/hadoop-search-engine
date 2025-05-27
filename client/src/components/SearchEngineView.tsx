@@ -11,10 +11,22 @@ interface SearchEngineViewProps {
 }
 
 const SearchEngineView: React.FC<SearchEngineViewProps> = ({ onSearch }) => {
-  const [selectedVideo, setSelectedVideo] = useState<null | {
-    title: string;
-    description: string;
-  }>(null);
+  type VideoJson = {
+    camera_id: string;
+    location: string;
+    priority: string;
+    video_file: string;
+    date: string;
+    timeslots: {
+      hour: string;
+      object_counts: {
+        [key: string]: number;
+      };
+    }[];
+    alerts: any[];
+  };
+  
+  const [selectedVideo, setSelectedVideo] = useState<null | VideoJson>(null);
 
   const [hasSearched, setHasSearched] = useState(false);
   const [currentQuery, setCurrentQuery] = useState(''); // To keep track of the last searched query
@@ -26,14 +38,27 @@ const SearchEngineView: React.FC<SearchEngineViewProps> = ({ onSearch }) => {
     onSearch(query); // Call the external onSearch 
   };
 
-  // Dummy video data for demonstration (increased quantity for scrolling effect)
-  const videoResults = Array.from({ length: 20 }, (_, i) => ({ // Generates 20 dummy videos
-    id: i + 1,
-    title: `Video sobre Apache Hadoop ${i + 1}`,
-    description: `Aprende los fundamentos de Hadoop y su ecosistema en este video número ${i + 1}. Explora casos de uso y ejemplos prácticos para Big Data.`,
-    duration: `15:${String(i * 2).padStart(2, '0')}`,
-    imageUrl: SampleMiniature
+  // Simulated video data resembling the actual JSON structure
+  const videoResults: VideoJson[] = Array.from({ length: 10 }, (_, i) => ({
+    camera_id: `cam_${i + 1}`,
+    location: `Ubicación ${i + 1}`,
+    priority: i % 2 === 0 ? 'alta' : 'media',
+    video_file: `video_${i + 1}.mpg`,
+    date: `2024-01-${String(i + 1).padStart(2, '0')}`,
+    timeslots: [
+      {
+        hour: '00:00-01:00',
+        object_counts: {
+          car: Math.floor(Math.random() * 200),
+          person: Math.floor(Math.random() * 50),
+          truck: Math.floor(Math.random() * 20),
+          airplane: Math.floor(Math.random() * 10),
+        },
+      },
+    ],
+    alerts: [],
   }));
+
 
 
   return (
@@ -85,32 +110,38 @@ const SearchEngineView: React.FC<SearchEngineViewProps> = ({ onSearch }) => {
             <h2 className="text-xl font-semibold mb-4 text-gray-100">Resultados de video para "{currentQuery}"</h2>
             <div className="space-y-6">
               {/*aqui empieza*/}
-              {videoResults.map(video => (
+              {videoResults.map((video, idx) => (
                 <div
-                  key={video.id}
-                  onClick={() =>
-                    setSelectedVideo({ title: video.title, description: video.description })
-                  }
+                  key={idx}
+                  onClick={() => setSelectedVideo(video)}
                   className="flex bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-all duration-200 hover:bg-gray-700 cursor-pointer"
                 >
                   <div className="w-1/3 flex-shrink-0 aspect-video bg-gray-700 overflow-hidden">
                     <img
-                      src={video.imageUrl}
-                      alt={video.title}
+                      src={SampleMiniature}
+                      alt={video.video_file}
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="w-2/3 p-4 flex flex-col justify-center">
-                    <h3 className="text-lg font-medium text-[#5dcf7b] mb-1">{video.title}</h3>
-                    <p className="text-gray-300 text-sm mb-2 line-clamp-2">{video.description}</p>
-                    <span className="text-gray-500 text-xs">{video.duration}</span>
+                    <h3 className="text-lg font-medium text-[#5dcf7b] mb-1">{video.video_file}</h3>
+                    <p className="text-gray-300 text-sm mb-2 line-clamp-2">
+                      {video.location} | {video.priority} | {video.date}
+                    </p>
+                    <div className="text-gray-400 text-xs">
+                      {Object.entries(video.timeslots[0].object_counts).map(([obj, count]) => (
+                        <span key={obj} className="mr-2">
+                          {obj}: {count}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
               ))}
+
               {selectedVideo && (
                 <VideoInformation
-                  title={selectedVideo.title}
-                  description={selectedVideo.description}
+                  video={selectedVideo}
                   onClose={() => setSelectedVideo(null)}
                 />
               )}
