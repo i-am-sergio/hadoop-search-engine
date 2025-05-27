@@ -32,7 +32,7 @@ Estos archivos están inspirados en el dataset **VIRAT Video Dataset** (https://
 Para simular mayor volumen y diversidad se desarrollaron scripts en Python y TypeScript:
 
 - **Python (`generate.py`)**:  
-  - **¿Qué hace?** Genera N archivos JSON con metadatos de cámara aleatorios.  
+  - **Descripción** Genera N archivos JSON con metadatos de cámara aleatorios.  
   - **Campos:** `camera_id`, `location`, `priority`, `video_file`, `date`, `object_counts`.  
   - **Salida:** Directorio `random_camera_data/` con `camera_data_i.json`.  
 
@@ -52,7 +52,7 @@ Para simular mayor volumen y diversidad se desarrollaron scripts en Python y Typ
 
 * **TypeScript (normalización de etiquetas):**
 
-  * **¿Qué hace?** Traduce y pasa a singular etiquetas en español a sus equivalentes en inglés.
+  * **Descripción** Traduce y pasa a singular etiquetas en español a sus equivalentes en inglés.
 
   ```typescript
   const hashES_EN: {[key:string]:string} = {
@@ -66,7 +66,7 @@ Para simular mayor volumen y diversidad se desarrollaron scripts en Python y Typ
 
 * **Filtrado de COCO:**
 
-  * **¿Qué hace?** Consulta la lista oficial de clases COCO para seleccionar solo objetos soportados.
+  * **Descripción** Consulta la lista oficial de clases COCO para seleccionar solo objetos soportados.
   * **Enlace:** [https://github.com/ultralytics/yolov5/blob/master/data/coco.yaml](https://github.com/ultralytics/yolov5/blob/master/data/coco.yaml)
 
 ---
@@ -82,7 +82,7 @@ Además del dataset VIRAT, se incorporaron dos colecciones de Kaggle:
 
 ### 2.4 Carga al HDFS
 
-* **¿Qué hace?** Crea el directorio de entrada en HDFS y sube los JSON generados.
+* **Descripción** Crea el directorio de entrada en HDFS y sube los JSON generados.
 
 ```bash
 hdfs dfs -mkdir -p /user/hadoop/input
@@ -158,7 +158,7 @@ yarn node -list
 
 #### `core-site.xml`
 
-* **¿Qué hace?** Define el sistema de archivos por defecto y ajusta buffer I/O.
+* **Descripción** Define el sistema de archivos por defecto y ajusta buffer I/O.
 
 ```xml
 <configuration>
@@ -169,7 +169,7 @@ yarn node -list
 
 #### `hdfs-site.xml`
 
-* **¿Qué hace?** Configura replicación, directorios de datos, tamaño de bloque y buffers de socket.
+* **Descripción** Configura replicación, directorios de datos, tamaño de bloque y buffers de socket.
 
 ```xml
 <configuration>
@@ -186,7 +186,7 @@ yarn node -list
 
 #### `mapred-site.xml`
 
-* **¿Qué hace?** Indica que MapReduce corre sobre YARN y configura el JobHistory.
+* **Descripción** Indica que MapReduce corre sobre YARN y configura el JobHistory.
 
 ```xml
 <configuration>
@@ -201,7 +201,7 @@ yarn node -list
 
 #### `yarn-site.xml`
 
-* **¿Qué hace?** Define el ResourceManager y aux-servicios para shuffle.
+* **Descripción** Define el ResourceManager y aux-servicios para shuffle.
 
 ```xml
 <configuration>
@@ -223,7 +223,7 @@ yarn node -list
 
 ### 4.1 YOLOv5 en Python
 
-* **¿Qué hace?** Detecta objetos (“person”, “backpack”, “car”) en video y agrupa conteos por intervalos de 10 s.
+* **Descripción** Detecta objetos (“person”, “backpack”, “car”) en video y agrupa conteos por intervalos de 10 s.
 
 ```python
 import cv2, torch, json
@@ -257,7 +257,7 @@ with open("output.json","w") as f: json.dump(out,f,indent=4)
 
 ### 4.2 YOLOv8 Distribuido con Java + Streaming
 
-* **¿Qué hace?** Reparte la tarea de detección por video entre nodos via Hadoop Streaming y un mapper Java que invoca el script Python.
+* **Descripción** Reparte la tarea de detección por video entre nodos via Hadoop Streaming y un mapper Java que invoca el script Python.
 
 ```bash
 # Subir scripts y modelo
