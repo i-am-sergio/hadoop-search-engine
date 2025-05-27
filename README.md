@@ -31,22 +31,43 @@ Estos archivos están inspirados en el dataset **VIRAT Video Dataset** (https://
 
 Para simular mayor volumen y diversidad se desarrollaron scripts en Python y TypeScript:
 
-- **Python (`generate.py`)**: genera N archivos `camera_data_i.json` con campos:
-  - `camera_id`, `location`, `priority`, `video_file`, `date`, `object_counts`
-  - Cada JSON anida datos bajo la clave con el nombre del archivo.  
-- **Normalización de etiquetas**:
-  - Tabla hash Español→Inglés y singularización en TypeScript:
-    ```typescript
-    const hashES_EN: {[key:string]:string} = {
-      "personas":   "person",
-      "autos":      "car",
-      "bicicletas": "bicycle",
-      // …
-    };
-    resultado = tokens.map(t => hashES_EN[t.toLowerCase()] || t.toLowerCase());
-    ```
-- **Filtrado de COCO**: se consultó la lista oficial de objetos en  
-  https://github.com/ultralytics/yolov5/blob/master/data/coco.yaml  
+- **Python (`generate.py`)**:  
+  - **¿Qué hace?** Genera N archivos JSON con metadatos de cámara aleatorios.  
+  - **Campos:** `camera_id`, `location`, `priority`, `video_file`, `date`, `object_counts`.  
+  - **Salida:** Directorio `random_camera_data/` con `camera_data_i.json`.  
+
+  ```python
+  def generate_random_files(num_files):
+      """
+      Genera archivos JSON con metadatos de cámaras:
+      - camera_id: cam_01 … cam_10
+      - location: Main Entrance, Loading Dock, Cafeteria, …
+      - priority: baja, media, alta
+      - video_file: acorde a la ubicación
+      - date: fecha aleatoria (YYYY-MM-DD)
+      - object_counts: conteos aleatorios de objetos
+      """
+      # … (ver código completo en Anexo)
+  ````
+
+* **TypeScript (normalización de etiquetas):**
+
+  * **¿Qué hace?** Traduce y pasa a singular etiquetas en español a sus equivalentes en inglés.
+
+  ```typescript
+  const hashES_EN: {[key:string]:string} = {
+    "personas":   "person",
+    "autos":      "car",
+    "bicicletas": "bicycle",
+    // …
+  };
+  resultado = tokens.map(t => hashES_EN[t.toLowerCase()] || t.toLowerCase());
+  ```
+
+* **Filtrado de COCO:**
+
+  * **¿Qué hace?** Consulta la lista oficial de clases COCO para seleccionar solo objetos soportados.
+  * **Enlace:** [https://github.com/ultralytics/yolov5/blob/master/data/coco.yaml](https://github.com/ultralytics/yolov5/blob/master/data/coco.yaml)
 
 ---
 
@@ -54,14 +75,14 @@ Para simular mayor volumen y diversidad se desarrollaron scripts en Python y Typ
 
 Además del dataset VIRAT, se incorporaron dos colecciones de Kaggle:
 
-- **Smart-City CCTV Violence Detection Dataset (SCVD)**  
-  https://www.kaggle.com/datasets/toluwaniaremu/smartcity-cctv-violence-detection-dataset-scvd  
-- **CCTV Action Recognition Dataset**  
-  https://www.kaggle.com/datasets/jonathannield/cctv-action-recognition-dataset  
+* **Smart-City CCTV Violence Detection Dataset (SCVD)**
+* **CCTV Action Recognition Dataset**
 
 ---
 
 ### 2.4 Carga al HDFS
+
+* **¿Qué hace?** Crea el directorio de entrada en HDFS y sube los JSON generados.
 
 ```bash
 hdfs dfs -mkdir -p /user/hadoop/input
@@ -69,7 +90,7 @@ hdfs dfs -put cam_01_entrada_principal_2024-04-13.json /user/hadoop/input
 hdfs dfs -put cam_02_pasillo_b_2024-04-13.json /user/hadoop/input
 hdfs dfs -put cam_03_bicicleteros_2024-04-13.json /user/hadoop/input
 hdfs dfs -ls /user/hadoop/input
-````
+```
 
 ---
 
@@ -86,7 +107,7 @@ Clúster de cuatro nodos con Ubuntu y Java 8:
 | 10.7.134.197 | paul (master) |
 | 10.7.135.212 | aldo-nitro    |
 
-Instalación básica y SSH sin contraseña:
+* **¿Qué hace este bloque?** Instala Java, habilita SSH sin contraseña y genera claves.
 
 ```bash
 sudo apt update
@@ -98,16 +119,34 @@ ssh-keygen -t rsa
 cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 ```
 
-Descarga e instalación de Hadoop 3.3.6, variables en `~/.bashrc`, formateo y arranque:
+* **¿Qué hace este bloque?** Descarga y despliega Hadoop 3.3.6.
 
 ```bash
 wget https://dlcdn.apache.org/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz
 tar xzf hadoop-3.3.6.tar.gz
 mv hadoop-3.3.6 hadoop
+```
 
-# ~/.bashrc exports...
+* **¿Qué hace este bloque?** Configura las variables de entorno para Hadoop.
+
+```bash
+# Añadir a ~/.bashrc
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+export HADOOP_HOME=/home/hadoop/hadoop
+export HADOOP_INSTALL=$HADOOP_HOME
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export HADOOP_YARN_HOME=$HADOOP_HOME
+export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
+export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin
+export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"
 source ~/.bashrc
+```
 
+* **¿Qué hace este bloque?** Formatea el NameNode e inicia todos los servicios Hadoop/YARN.
+
+```bash
 hdfs namenode -format
 start-all.sh
 yarn node -list
@@ -119,113 +158,58 @@ yarn node -list
 
 #### `core-site.xml`
 
+* **¿Qué hace?** Define el sistema de archivos por defecto y ajusta buffer I/O.
+
 ```xml
 <configuration>
-  <property>
-    <name>fs.defaultFS</name>
-    <value>hdfs://paul:9000</value>
-  </property>
-  <property>
-    <name>io.file.buffer.size</name>
-    <value>65536</value>
-  </property>
+  <property><name>fs.defaultFS</name><value>hdfs://paul:9000</value></property>
+  <property><name>io.file.buffer.size</name><value>65536</value></property>
 </configuration>
 ```
 
 #### `hdfs-site.xml`
 
+* **¿Qué hace?** Configura replicación, directorios de datos, tamaño de bloque y buffers de socket.
+
 ```xml
 <configuration>
-  <property>
-    <name>dfs.replication</name>
-    <value>4</value>
-  </property>
-  <property>
-    <name>dfs.name.dir</name>
-    <value>file:///home/hadoop/hadoopdata/hdfs/namenode</value>
-  </property>
-  <property>
-    <name>dfs.data.dir</name>
-    <value>file:///home/hadoop/hadoopdata/hdfs/datanode</value>
-  </property>
-  <property>
-    <name>dfs.blocksize</name>
-    <value>268435456</value>
-  </property>
-  <property>
-    <name>dfs.client.socket.send.buffer.size</name>
-    <value>131072</value>
-  </property>
-  <property>
-    <name>dfs.client.socket.receive.buffer.size</name>
-    <value>131072</value>
-  </property>
-  <property>
-    <name>dfs.datanode.max.transfer.threads</name>
-    <value>16384</value>
-  </property>
-  <property>
-    <name>dfs.permissions</name>
-    <value>false</value>
-  </property>
+  <property><name>dfs.replication</name><value>4</value></property>
+  <property><name>dfs.name.dir</name><value>file:///home/hadoop/hadoopdata/hdfs/namenode</value></property>
+  <property><name>dfs.data.dir</name><value>file:///home/hadoop/hadoopdata/hdfs/datanode</value></property>
+  <property><name>dfs.blocksize</name><value>268435456</value></property>
+  <property><name>dfs.client.socket.send.buffer.size</name><value>131072</value></property>
+  <property><name>dfs.client.socket.receive.buffer.size</name><value>131072</value></property>
+  <property><name>dfs.datanode.max.transfer.threads</name><value>16384</value></property>
+  <property><name>dfs.permissions</name><value>false</value></property>
 </configuration>
 ```
 
 #### `mapred-site.xml`
 
+* **¿Qué hace?** Indica que MapReduce corre sobre YARN y configura el JobHistory.
+
 ```xml
 <configuration>
-  <property>
-    <name>mapreduce.framework.name</name>
-    <value>yarn</value>
-  </property>
-  <property>
-    <name>mapreduce.jobhistory.address</name>
-    <value>paul:10020</value>
-  </property>
-  <property>
-    <name>mapreduce.jobhistory.webapp.address</name>
-    <value>paul:19888</value>
-  </property>
-  <property>
-    <name>yarn.app.mapreduce.am.env</name>
-    <value>HADOOP_MAPRED_HOME=/home/hadoop/hadoop</value>
-  </property>
-  <property>
-    <name>mapreduce.map.env</name>
-    <value>HADOOP_MAPRED_HOME=/home/hadoop/hadoop</value>
-  </property>
-  <property>
-    <name>mapreduce.reduce.env</name>
-    <value>HADOOP_MAPRED_HOME=/home/hadoop/hadoop</value>
-  </property>
+  <property><name>mapreduce.framework.name</name><value>yarn</value></property>
+  <property><name>mapreduce.jobhistory.address</name><value>paul:10020</value></property>
+  <property><name>mapreduce.jobhistory.webapp.address</name><value>paul:19888</value></property>
+  <property><name>yarn.app.mapreduce.am.env</name><value>HADOOP_MAPRED_HOME=/home/hadoop/hadoop</value></property>
+  <property><name>mapreduce.map.env</name><value>HADOOP_MAPRED_HOME=/home/hadoop/hadoop</value></property>
+  <property><name>mapreduce.reduce.env</name><value>HADOOP_MAPRED_HOME=/home/hadoop/hadoop</value></property>
 </configuration>
 ```
 
 #### `yarn-site.xml`
 
+* **¿Qué hace?** Define el ResourceManager y aux-servicios para shuffle.
+
 ```xml
 <configuration>
-  <property>
-    <name>yarn.resourcemanager.hostname</name>
-    <value>paul</value>
-  </property>
-  <property>
-    <name>yarn.resourcemanager.scheduler.address</name>
-    <value>paul:8030</value>
-  </property>
-  <property>
-    <name>yarn.resourcemanager.resource-tracker.address</name>
-    <value>paul:8025</value>
-  </property>
-  <property>
-    <name>yarn.resourcemanager.admin.address</name>
-    <value>paul:8011</value>
-  </property>
-  <property>
-    <name>yarn.nodemanager.aux-services</name>
-    <value>mapreduce_shuffle</value>
-  </property>
+  <property><name>yarn.resourcemanager.hostname</name><value>paul</value></property>
+  <property><name>yarn.resourcemanager.scheduler.address</name><value>paul:8030</value></property>
+  <property><name>yarn.resourcemanager.resource-tracker.address</name><value>paul:8025</value></property>
+  <property><name>yarn.resourcemanager.admin.address</name><value>paul:8011</value></property>
+  <property><name>yarn.nodemanager.aux-services</name><value>mapreduce_shuffle</value></property>
 </configuration>
 ```
 
@@ -238,6 +222,8 @@ yarn node -list
 ## 4. Procesamiento de Video con YOLO
 
 ### 4.1 YOLOv5 en Python
+
+* **¿Qué hace?** Detecta objetos (“person”, “backpack”, “car”) en video y agrupa conteos por intervalos de 10 s.
 
 ```python
 import cv2, torch, json
@@ -256,7 +242,7 @@ def slot(sec):
 
 i=0
 while True:
-  ret,frm=cap.read(); 
+  ret,frm=cap.read()
   if not ret: break
   t=i/fps; sl=slot(t)
   for *_,conf,cls in model(frm).xyxy[0]:
@@ -264,13 +250,14 @@ while True:
     if lbl in TARGET: results[sl][lbl]+=1
   i+=1
 cap.release()
+
 out={"timeslots":[{"hour":h,"object_counts":dict(c)} for h,c in sorted(results.items())]}
 with open("output.json","w") as f: json.dump(out,f,indent=4)
 ```
 
----
-
 ### 4.2 YOLOv8 Distribuido con Java + Streaming
+
+* **¿Qué hace?** Reparte la tarea de detección por video entre nodos via Hadoop Streaming y un mapper Java que invoca el script Python.
 
 ```bash
 # Subir scripts y modelo
@@ -301,42 +288,42 @@ hadoop jar /usr/lib/hadoop-mapreduce/hadoop-streaming-3.3.6.jar \
 * **MapReduce:**
 
   * *Mapper*: tokeniza JSON y emite `<palabra, doc>`.
-  * *Reducer*: agrega listas de documentos/posiciones.
-* **Salida:** `/user/hadoop/inverted_index` en HDFS.
+  * *Reducer*: agrega listas de posiciones.
+* **Salida:** `/user/hadoop/inverted_index`.
 
 ### 5.2 PageRank
 
-* **Algoritmo:** Iteraciones de PageRank adaptadas a enlaces inferidos en JSON.
-* **MapReduce:** Cada iteración se ejecuta como job; se detiene al converger o al alcanzar N iteraciones.
-* **Salida:** `/user/hadoop/pagerank` con puntuaciones finales.
+* **Algoritmo:** Iterativo de PageRank adaptado a enlaces JSON.
+* **MapReduce:** Cada iteración es un job, se detiene al converger.
+* **Salida:** `/user/hadoop/pagerank`.
 
 ---
 
 ## 6. Interfaz del Motor de Búsqueda
 
 * **Frontend:** React + TypeScript.
-* **`SearchEngineView.tsx`**: lista resultados y maneja estado `modalVideo`.
-* **`VideoInformation.tsx`** (modal): muestra `VideoPlayer.tsx` y panel de metadatos.
-* **`VideoPlayer.tsx`**: reproductor `<video>` para `.mp4`.
-* **Git Flow:** ramas `feature-video`, merges con `main` mediante `git pull origin <rama>`.
+* **`SearchEngineView.tsx`**: muestra lista de videos y controla estado `modalVideo`.
+* **`VideoInformation.tsx`** (modal): contiene `VideoPlayer.tsx` + panel de metadatos.
+* **`VideoPlayer.tsx`**: reproductor HTML para `.mp4`.
+* **Git Flow:** ramas `feature-video`, merges con `main` via `git pull origin <rama>`.
 
 ---
 
 ## 7. Desafíos y Problemas Encontrados
 
-* **Firewall/VPN:** bloqueo SSH en interfaz `ham0` de Hamachi; resuelto con `firewall-cmd --add-interface=ham0`.
-* **Generación sintética:** ajustes en scripts Python/TS para normalizar etiquetas y anidar claves.
-* **Hadoop Streaming:** falta de shebang y permisos `chmod +x` en mappers Python; mpɡ→mp4 para compatibilidad.
-* **Java Streaming:** mapper Java no encontraba scripts hasta corregir rutas HDFS.
-* **Race conditions:** acceso simultáneo a mismas rutas en HDFS; mitigado con listas por nodo.
-* **Escalabilidad:** Raspberry Pi falló bajo carga; se requiere ajustar `yarn.nodemanager.resource.memory-mb`.
-* **Ramas Git:** múltiples merges tras pushes en `main`, `aldo`, `feature-video`.
+* **Firewall/VPN:** bloqueo SSH en `ham0`; resuelto con `firewall-cmd --add-interface=ham0`.
+* **Generación sintética:** scripts ajustados para normalizar etiquetas y anidar claves.
+* **Hadoop Streaming:** faltaba shebang y permisos `chmod +x`; mpɡ→mp4 para compatibilidad.
+* **Java Streaming:** mapper Java requería rutas HDFS correctas.
+* **Race conditions:** mitigadas creando listados individuales por nodo.
+* **Escalabilidad:** Raspberry Pi falló bajo carga; ajustar `yarn.nodemanager.resource.memory-mb`.
+* **Ramas Git:** merges tras pushes en `main`, `aldo`, `feature-video`.
 
 ---
 
 ## 8. Conclusiones
 
-Se desarrolló un motor de búsqueda distribuido funcional, combinando índices invertidos, PageRank y detección de objetos en video con YOLO. Se configuró un clúster Hadoop real, se optimizaron procesos MapReduce y se integró análisis avanzado de video de manera distribuida. Futuras mejoras: escalabilidad dinámica, balanceo de carga y refinamiento de la interfaz.
+Se desarrolló un motor de búsqueda distribuido funcional, combinando índices invertidos, PageRank y detección de objetos con YOLO en un clúster real de Hadoop. Se optimizaron procesos, se resolvieron conflictos de red, streaming y Git, y se integró una interfaz interactiva. Futuras mejoras: escalabilidad dinámica, balanceo de carga y refinamiento UI.
 
 ---
 
@@ -344,7 +331,6 @@ Se desarrolló un motor de búsqueda distribuido funcional, combinando índices 
 
 * **Comandos Hadoop** (CLI).
 * **Scripts Python/Java/TS** completos.
-* **Capturas** de Resource Manager, terminales y Discord (logs clave).
+* **Capturas** de Resource Manager, terminales y Discord.
 * **Tabla de tiempos** antes vs. después de optimizaciones.
-
 
