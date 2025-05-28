@@ -1,0 +1,9 @@
+{
+    "video_id": "file002",
+    "path": "haddop/dog.json",
+    "location": "Cayma",
+    "objects": {
+        "person": 10,
+        "auto": 11
+    }
+}

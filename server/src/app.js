@@ -3,6 +3,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import videoRoutes from './routes/video.routes.js';
 import searchRoutes from './routes/search.routes.js';
+import hdfsRoutes from './routes/hdfs.routes.js';
+
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,7 +21,8 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 // Rutas
 app.use('/video', videoRoutes);
-app.use('/api/search', searchRoutes); 
+app.use('/search', searchRoutes); 
+app.use('/hdfs', hdfsRoutes);
 
 // Manejo de errores 404
 app.use((req, res) => {
