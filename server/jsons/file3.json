@@ -1,0 +1,9 @@
+{
+    "video_id": "file003",
+    "path": "user/hadoop/person.json",
+    "location": "Cayma",
+    "objects": {
+        "person": 12,
+        "auto": 13
+    }
+}

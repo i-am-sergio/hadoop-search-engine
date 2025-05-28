@@ -1,0 +1,3 @@
+car	file5.json, file2.json
+dog	file1.json
+bicycle	file4.json, file3.json, file5.json
