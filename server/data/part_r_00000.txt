@@ -1,3 +1,4 @@
-car	file5.json, file2.json
-dog	file1.json
-bicycle	file4.json, file3.json, file5.json
+person	09152008flight2tape1_5.json, 09152008flight2tape2_2.json, 09152008flight2tape1_7.json, 09152008flight2tape1_6.json, 09152008flight2tape2_1.json, 09152008flight2tape2_4.json
+bus	09152008flight2tape1_5.json, 09152008flight2tape2_2.json, 09152008flight2tape1_7.json, 09152008flight2tape1_6.json, 09152008flight2tape2_1.json
+bicycle	09152008flight2tape2_4.json
+airplane 09152008flight2tape2_2.json, 09152008flight2tape1_7.json, 09152008flight2tape1_6.json

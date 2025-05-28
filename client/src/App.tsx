@@ -6,7 +6,7 @@ function App() {
   const handleSearch = (query: string) => {
     const resultado = extractCocoClassesFromText(query);
     console.log("Resultado:", resultado);
-    alert(`Objetos detectados: ${resultado.join(", ")}`);
+    // alert(`Objetos detectados: ${resultado.join(", ")}`);
   };
 
   return (

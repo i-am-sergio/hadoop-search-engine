@@ -1,18 +1,59 @@
-import fs from 'fs/promises';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { loadEntityToFileMap } from '../utils/index.js';
+import { Writable } from 'stream';
+import webhdfs from 'webhdfs';
+import { loadEntityToFileMap } from '../utils/loadEntityMapFromHDFS.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const jsonDir = path.join(__dirname, '../../jsons');
+const hdfs = webhdfs.createClient({
+  user: 'hadoop',
+  host: 'paul',
+  port: 9870,
+  path: '/webhdfs/v1'
+});
 
 let entityFileMap = {};
 
-// Cargar entidad-archivo al iniciar
 (async () => {
   entityFileMap = await loadEntityToFileMap();
 })();
+
+const readCleanJSONFromHDFS = (remoteFilePath) => {
+  return new Promise((resolve, reject) => {
+    let fileContent = '';
+
+    const writable = new Writable({
+      write(chunk, encoding, callback) {
+        fileContent += chunk.toString();
+        callback();
+      }
+    });
+
+    hdfs.createReadStream(remoteFilePath)
+      .on('error', (err) => {
+        console.error('Error leyendo archivo HDFS:', remoteFilePath);
+        reject(err);
+      })
+      .pipe(writable)
+      .on('finish', () => {
+        try {
+          const firstBraceIndex = fileContent.indexOf('{');
+          const cleaned = fileContent.slice(firstBraceIndex, fileContent.lastIndexOf('}') + 1);
+          const parsed = JSON.parse(cleaned);
+          resolve(parsed);
+        } catch (err) {
+          console.error(`Error al parsear JSON desde ${remoteFilePath}:`, err.message);
+          resolve(null);
+        }
+      });
+  });
+};
+
+// 👉 Nueva función: agrega la ruta completa del video en HDFS
+const addVideoHDFSPath = (json) => {
+  const videoFile = json.video_file;
+  if (videoFile) {
+    json.video_path_in_hdfs = `/user/hadoop/inputVideos/${videoFile}`;
+  }
+  return json;
+};
 
 export const performBasicSearch = async (entities) => {
   const seenFiles = new Set();
@@ -24,20 +65,26 @@ export const performBasicSearch = async (entities) => {
     if (!files || files.length === 0) continue;
 
     for (const filename of files) {
-      if (seenFiles.has(filename)) continue; // evita duplicados
+      if (seenFiles.has(filename)) continue;
 
-      const filePath = path.join(jsonDir, filename);
+      const hdfsPath = `/user/hadoop/output/${filename}`;
+
       try {
-        const content = await fs.readFile(filePath, 'utf-8');
-        const parsed = JSON.parse(content);
-        combinedResults.push(...(Array.isArray(parsed) ? parsed : [parsed]));
-        seenFiles.add(filename);
+        const parsed = await readCleanJSONFromHDFS(hdfsPath);
+        if (parsed) {
+          const enriched = addVideoHDFSPath(parsed);  // 👈 aplicamos la función aquí
+          combinedResults.push(enriched);
+          seenFiles.add(filename);
+        }
       } catch (err) {
-        // Ignora errores de lectura o JSON inválido
-        continue;
+        console.error(`Error procesando archivo ${filename}`, err.message);
       }
     }
   }
+
+  // Imprimir los resultados enriquecidos
+  console.log('Resultados con ruta de video HDFS:');
+  console.log(combinedResults);
 
   return combinedResults;
 };
