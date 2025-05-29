@@ -1,4 +1,4 @@
-# Motor de Búsqueda usando Hadoop
+F# Motor de Búsqueda usando Hadoop
 
 Hecho por:
 
@@ -732,12 +732,6 @@ Después de la ejecución del trabajo, los resultados se almacenan en el directo
 3. **Índice Invertido**: El resultado es almacenado en el directorio `/user/hadoop/outputJson`, el cual contiene las listas de documentos indexados por cada palabra o fecha.
 
 Este proceso crea un índice eficiente para buscar y analizar las palabras o fechas en los metadatos de los videos.
-
-## 5. Modulo: Client - Frontend
-
-Aquí tienes una versión mejor redactada y estructurada de tu sección, con una explicación más clara y fluida:
-
----
 
 ## 5. Módulo: Cliente - Frontend
 
