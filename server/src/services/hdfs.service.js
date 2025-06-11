@@ -27,8 +27,8 @@ export const readHDFSFile = () => {
       })
       .pipe(writable)
       .on('finish', () => {
-        console.log('Contenido del archivo HDFS:');
-        console.log(fileContent);
+        console.log('Contenido del archivo HDFS cargado exitosamente!!!');
+        // console.log(fileContent);
         resolve(fileContent);
       });
   });

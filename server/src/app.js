@@ -1,5 +1,6 @@
 import express from 'express';
 import path from 'path';
+import cors from 'cors';
 import { fileURLToPath } from 'url';
 import videoRoutes from './routes/video.routes.js';
 import searchRoutes from './routes/search.routes.js';
@@ -15,6 +16,7 @@ const app = express();
 // Configuración básica
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors())
 
 // Directorio público
 app.use(express.static(path.join(__dirname, '../public')));

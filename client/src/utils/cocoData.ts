@@ -23,7 +23,7 @@ export const translationTable: { [key: string]: string } = {
   "bicicletas": "bicycle",
   "moto": "motorcycle",
   "motos": "motorcycle",
-  "avión": "airplane",
+  "avion": "airplane",
   "aviones": "airplane",
   "autobús": "bus",
   "autobuses": "bus",

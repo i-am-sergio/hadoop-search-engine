@@ -1,10 +1,26 @@
+// SearchEngineView.tsx
 import React, { useState } from 'react';
-import SearchInputArea from './SearchInputArea'; // Import our search input component
-import SvgIcon from './SvgIcon'; // Assuming SvgIcon is a wrapper for your SVG assets
+import SearchInputArea from './SearchInputArea';
+import SvgIcon from './SvgIcon';
 
 import AccountCircleIcon from '../assets/account_circle.svg';
-import SampleMiniature from '../assets/sample_miniature.png'
+import SampleMiniature from '../assets/sample_miniature.png';
 import VideoInformation from './VideoInformation';
+import { extractCocoClassesFromText } from '../utils/searchProcessor';
+
+interface VideoResult {
+  camera_id: number;
+  location: string;
+  priority: string;
+  video_file: string;
+  date: string;
+  timeslots: Array<{
+    hour: string;
+    object_counts: { [key: string]: number };
+  }>;
+  alerts: any[];
+  video_path_in_hdfs: string;
+}
 
 interface SearchEngineViewProps {
   onSearch: (query: string) => void;
@@ -14,33 +30,47 @@ const SearchEngineView: React.FC<SearchEngineViewProps> = ({ onSearch }) => {
   const [selectedVideo, setSelectedVideo] = useState<null | {
     title: string;
     description: string;
+    hdfsPath: string;
   }>(null);
 
   const [hasSearched, setHasSearched] = useState(false);
-  const [currentQuery, setCurrentQuery] = useState(''); // To keep track of the last searched query
+  const [currentQuery, setCurrentQuery] = useState('');
+  const [videoResults, setVideoResults] = useState<VideoResult[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSearchSubmit = (query: string) => {
-    setCurrentQuery(query); // Save the query
-    console.log('Searching for:', query);
-    setHasSearched(true); // Indicate that a search has been performed
-    onSearch(query); // Call the external onSearch 
+  const handleSearchSubmit = async (query: string) => {
+    setCurrentQuery(query);
+    setHasSearched(true);
+    setLoading(true);
+    setError(null);
+
+    try {
+      const searchTerms = extractCocoClassesFromText(query);
+      const queryParam = searchTerms.join(',');
+      const response = await fetch(`http://localhost:5000/search?q=${queryParam}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data: VideoResult[] = await response.json();
+      setVideoResults(data);
+      onSearch(query);
+    } catch (e) {
+      console.error("Error fetching search results:", e);
+      setError("No se pudieron cargar los resultados de la búsqueda. Inténtalo de nuevo más tarde.");
+      setVideoResults([]);
+    } finally {
+      setLoading(false);
+    }
   };
-
-  // Dummy video data for demonstration (increased quantity for scrolling effect)
-  const videoResults = Array.from({ length: 20 }, (_, i) => ({ // Generates 20 dummy videos
-    id: i + 1,
-    title: `Video sobre Apache Hadoop ${i + 1}`,
-    description: `Aprende los fundamentos de Hadoop y su ecosistema en este video número ${i + 1}. Explora casos de uso y ejemplos prácticos para Big Data.`,
-    duration: `15:${String(i * 2).padStart(2, '0')}`,
-    imageUrl: SampleMiniature
-  }));
-
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-900 text-gray-200 font-sans">
       {hasSearched && (
-        <header className="w-full sticky top-0 z-10 bg-gray-900 border-b border-gray-700 shadow-lg"> {/* Added sticky, top-0, z-10, and shadow-lg */}
-          <div className="max-w-[1200px] mx-auto flex items-center px-6 py-4"> {/* Centered content */}
+        <header className="w-full sticky top-0 z-10 bg-gray-900 border-b border-gray-700 shadow-lg">
+          <div className="max-w-[1200px] mx-auto flex items-center px-6 py-4">
             <div className="flex items-center flex-shrink-0 mr-4">
               <span
                 className="text-3xl font-bold ml-2"
@@ -65,7 +95,6 @@ const SearchEngineView: React.FC<SearchEngineViewProps> = ({ onSearch }) => {
         </header>
       )}
 
-      {/* Adjusted main class to add padding-top when header is present */}
       <main className={`flex-grow flex flex-col items-center w-full px-5 ${hasSearched ? 'pt-8' : 'justify-center pb-20'}`}>
         {!hasSearched && (
           <>
@@ -83,27 +112,42 @@ const SearchEngineView: React.FC<SearchEngineViewProps> = ({ onSearch }) => {
         {hasSearched && (
           <div className="w-full max-w-3xl mt-8">
             <h2 className="text-xl font-semibold mb-4 text-gray-100">Resultados de video para "{currentQuery}"</h2>
+
+            {loading && <p className="text-gray-400">Cargando resultados...</p>}
+            {error && <p className="text-red-500">{error}</p>}
+
+            {!loading && !error && videoResults.length === 0 && (
+              <p className="text-gray-400">No se encontraron videos para "{currentQuery}".</p>
+            )}
+
             <div className="space-y-6">
-              {/*aqui empieza*/}
               {videoResults.map(video => (
                 <div
-                  key={video.id}
+                  key={video.camera_id + video.video_file}
                   onClick={() =>
-                    setSelectedVideo({ title: video.title, description: video.description })
+                    setSelectedVideo({
+                      title: `Cámara ${video.camera_id} - ${video.video_file}`,
+                      description: `Ubicación: ${video.location}, Prioridad: ${video.priority}, Fecha: ${video.date}`,
+                      hdfsPath: video.video_path_in_hdfs
+                    })
                   }
                   className="flex bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-all duration-200 hover:bg-gray-700 cursor-pointer"
                 >
                   <div className="w-1/3 flex-shrink-0 aspect-video bg-gray-700 overflow-hidden">
                     <img
-                      src={video.imageUrl}
-                      alt={video.title}
+                      src={SampleMiniature}
+                      alt={`Video de la cámara ${video.camera_id}`}
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="w-2/3 p-4 flex flex-col justify-center">
-                    <h3 className="text-lg font-medium text-[#5dcf7b] mb-1">{video.title}</h3>
-                    <p className="text-gray-300 text-sm mb-2 line-clamp-2">{video.description}</p>
-                    <span className="text-gray-500 text-xs">{video.duration}</span>
+                    <h3 className="text-lg font-medium text-[#5dcf7b] mb-1">{`Video de la cámara ${video.camera_id} (${video.location})`}</h3>
+                    <p className="text-gray-300 text-sm mb-2 line-clamp-2">
+                      Archivo: {video.video_file} <br />
+                      Fecha: {video.date} <br />
+                      Objetos detectados en el último timeslot: {video.timeslots[0] && Object.entries(video.timeslots[0].object_counts).map(([obj, count]) => `${obj}: ${count}`).join(', ')}
+                    </p>
+                    <span className="text-gray-500 text-xs">Prioridad: {video.priority}</span>
                   </div>
                 </div>
               ))}
@@ -111,6 +155,7 @@ const SearchEngineView: React.FC<SearchEngineViewProps> = ({ onSearch }) => {
                 <VideoInformation
                   title={selectedVideo.title}
                   description={selectedVideo.description}
+                  hdfs_path={selectedVideo.hdfsPath}
                   onClose={() => setSelectedVideo(null)}
                 />
               )}
@@ -119,7 +164,6 @@ const SearchEngineView: React.FC<SearchEngineViewProps> = ({ onSearch }) => {
         )}
       </main>
 
-      {/* Footer - Minimalist */}
       <footer className="w-full py-4 text-center text-gray-400 text-sm border-t border-gray-700">
         <p className="m-0">
           Hecho con ❤️ por el grupo 8 de Big Data.
