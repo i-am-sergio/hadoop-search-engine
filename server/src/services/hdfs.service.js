@@ -3,14 +3,14 @@ import { Writable } from 'stream';
 
 const hdfs = webhdfs.createClient({
   user: 'hadoop', // o el nombre de usuario de tu sistema HDFS
-  host: 'paul',
+  host: 'localhost',
   port: 9870,
   path: '/webhdfs/v1'
 });
 
 export const readHDFSFile = () => {
   return new Promise((resolve, reject) => {
-    const remoteFilePath = '/user/hadoop/outputJson/part-r-00000';
+    const remoteFilePath = '/part-r-00000';
     let fileContent = '';
 
     const writable = new Writable({

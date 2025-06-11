@@ -13,6 +13,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
+    "hive-driver": "^1.0.0",
     "morgan": "^1.10.0",
     "multer": "^2.0.0",
     "webhdfs": "^1.2.0"
