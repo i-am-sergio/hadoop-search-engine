@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pyhive import hive
 from typing import List
 import json
+import uvicorn
 
 app = FastAPI()
 
@@ -18,3 +19,7 @@ def read_wordcounts():
     columns = [desc[0].split('.')[-1] for desc in cursor.description]  # ['word', 'count']
     data = [dict(zip(columns, row)) for row in results]
     return data
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=3000)
