@@ -9,7 +9,7 @@ app = FastAPI()
 spark = SparkSession.builder \
     .appName("HiveSearchApp") \
     .enableHiveSupport() \
-    .config("hive.metastore.uris", "thrift://localhost:9083") \
+    .config("hive.metastore.uris", "thrift://fedora:9083") \
     .getOrCreate()
 
 # # (Opcional) Cachear tabla si es muy consultada
@@ -20,6 +20,13 @@ def read_wordcounts():
     df = spark.sql("SELECT * FROM word_counts")
     data = [row.asDict() for row in df.collect()]
     return data
+
+@app.get("/videos")
+def read_videos():
+    df = spark.sql("SELECT * FROM videos_path")
+    data = [row.asDict() for row in df.collect()]
+    return data
+
 
 # @app.get("/search/{keyword}")
 # def search_videos(keyword: str):
