@@ -1,0 +1,2435 @@
+{
+    "entity": "person",
+    "videos": [
+        {
+            "camera_id": 5,
+            "location": "Philadelphia",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000200_04_000937_001443.mp4",
+            "date": "2010-07-10",
+            "timeslots": [
+                [
+                    "06:00-07:00",
+                    {
+                        "car": 3559,
+                        "person": 307,
+                        "truck": 385
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 3,
+            "location": "Houston",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000200_05_001525_001575.mp4",
+            "date": "2010-07-17",
+            "timeslots": [
+                [
+                    "12:00-13:00",
+                    {
+                        "car": 336,
+                        "person": 8,
+                        "truck": 43
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 6,
+            "location": "San Diego",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000200_06_001693_001824.mp4",
+            "date": "2010-07-08",
+            "timeslots": [
+                [
+                    "06:00-07:00",
+                    {
+                        "fire hydrant": 1,
+                        "car": 1159,
+                        "person": 106,
+                        "truck": 81,
+                        "traffic light": 1
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 8,
+            "location": "San Jose",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000201_00_000018_000380.mp4",
+            "date": "2010-07-26",
+            "timeslots": [
+                [
+                    "02:00-03:00",
+                    {
+                        "bus": 3,
+                        "bicycle": 2,
+                        "car": 5552,
+                        "person": 274,
+                        "truck": 59,
+                        "traffic light": 4
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 1,
+            "location": "Houston",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000201_01_000384_000589.mp4",
+            "date": "2010-07-16",
+            "timeslots": [
+                [
+                    "03:00-04:00",
+                    {
+                        "bicycle": 2,
+                        "car": 4031,
+                        "person": 183,
+                        "truck": 65,
+                        "traffic light": 3
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 10,
+            "location": "Los Angeles",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000201_02_000590_000623.mp4",
+            "date": "2010-07-30",
+            "timeslots": [
+                [
+                    "22:00-23:00",
+                    {
+                        "car": 711,
+                        "person": 10,
+                        "truck": 9
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 10,
+            "location": "San Diego",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050000_02_000404_000486.mp4",
+            "date": "2010-07-02",
+            "timeslots": [
+                [
+                    "16:00-17:00",
+                    {
+                        "motorcycle": 1,
+                        "bus": 37,
+                        "car": 863,
+                        "person": 315,
+                        "truck": 278,
+                        "stop sign": 34,
+                        "traffic light": 1
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 5,
+            "location": "San Antonio",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050000_03_000585_000639.mp4",
+            "date": "2010-07-18",
+            "timeslots": [
+                [
+                    "07:00-08:00",
+                    {
+                        "motorcycle": 3,
+                        "bus": 19,
+                        "car": 616,
+                        "person": 85,
+                        "truck": 177,
+                        "stop sign": 32,
+                        "traffic light": 1
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 4,
+            "location": "Chicago",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050000_04_000640_000690.mp4",
+            "date": "2010-07-11",
+            "timeslots": [
+                [
+                    "14:00-15:00",
+                    {
+                        "bus": 33,
+                        "stop sign": 28,
+                        "car": 503,
+                        "person": 155,
+                        "truck": 164
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 1,
+            "location": "Los Angeles",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050000_05_000696_000732.mp4",
+            "date": "2010-07-25",
+            "timeslots": [
+                [
+                    "11:00-12:00",
+                    {
+                        "bus": 26,
+                        "stop sign": 19,
+                        "car": 408,
+                        "person": 97,
+                        "truck": 122
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 4,
+            "location": "New York",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050000_06_000908_000970.mp4",
+            "date": "2010-07-07",
+            "timeslots": [
+                [
+                    "13:00-14:00",
+                    {
+                        "bus": 9,
+                        "car": 645,
+                        "person": 18,
+                        "truck": 223
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 5,
+            "location": "San Antonio",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050000_07_001014_001126.mp4",
+            "date": "2010-07-23",
+            "timeslots": [
+                [
+                    "16:00-17:00",
+                    {
+                        "bus": 28,
+                        "stop sign": 4,
+                        "car": 1144,
+                        "person": 474,
+                        "truck": 364,
+                        "traffic light": 8
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 7,
+            "location": "San Antonio",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050000_08_001235_001295.mp4",
+            "date": "2010-07-02",
+            "timeslots": [
+                [
+                    "14:00-15:00",
+                    {
+                        "bus": 5,
+                        "stop sign": 2,
+                        "car": 590,
+                        "person": 151,
+                        "truck": 231
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 1,
+            "location": "Philadelphia",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050000_09_001310_001373.mp4",
+            "date": "2010-07-30",
+            "timeslots": [
+                [
+                    "15:00-16:00",
+                    {
+                        "bus": 5,
+                        "stop sign": 4,
+                        "car": 694,
+                        "person": 77,
+                        "truck": 176
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 6,
+            "location": "Philadelphia",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050000_10_001462_001491.mp4",
+            "date": "2010-07-13",
+            "timeslots": [
+                [
+                    "21:00-22:00",
+                    {
+                        "bus": 7,
+                        "car": 332,
+                        "person": 29,
+                        "truck": 123
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 7,
+            "location": "Phoenix",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050000_11_001530_001576.mp4",
+            "date": "2010-07-07",
+            "timeslots": [
+                [
+                    "14:00-15:00",
+                    {
+                        "bus": 31,
+                        "car": 552,
+                        "person": 22,
+                        "truck": 239
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 10,
+            "location": "San Jose",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050300_09_001789_001858.mp4",
+            "date": "2010-07-16",
+            "timeslots": [
+                [
+                    "02:00-03:00",
+                    {
+                        "bus": 3,
+                        "car": 867,
+                        "person": 14,
+                        "truck": 124
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 9,
+            "location": "Dallas",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050300_10_002176_002238.mp4",
+            "date": "2010-07-08",
+            "timeslots": [
+                [
+                    "10:00-11:00",
+                    {
+                        "car": 547,
+                        "person": 25,
+                        "truck": 60
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 9,
+            "location": "Chicago",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050301_00_000000_000036.mp4",
+            "date": "2010-07-28",
+            "timeslots": [
+                [
+                    "18:00-19:00",
+                    {
+                        "car": 353,
+                        "person": 6,
+                        "truck": 36
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 3,
+            "location": "New York",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050301_01_000083_000320.mp4",
+            "date": "2010-07-11",
+            "timeslots": [
+                [
+                    "11:00-12:00",
+                    {
+                        "bus": 1,
+                        "car": 2031,
+                        "person": 16,
+                        "airplane": 1,
+                        "truck": 261,
+                        "traffic light": 3
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 9,
+            "location": "Dallas",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050301_02_000544_000607.mp4",
+            "date": "2010-07-07",
+            "timeslots": [
+                [
+                    "01:00-02:00",
+                    {
+                        "car": 533,
+                        "person": 13,
+                        "boat": 1,
+                        "truck": 97,
+                        "traffic light": 4
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 4,
+            "location": "San Diego",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050301_03_000933_001046.mp4",
+            "date": "2010-07-08",
+            "timeslots": [
+                [
+                    "06:00-07:00",
+                    {
+                        "bus": 22,
+                        "car": 1119,
+                        "person": 80,
+                        "airplane": 3,
+                        "truck": 175,
+                        "fire hydrant": 2,
+                        "boat": 1,
+                        "traffic light": 1,
+                        "train": 11
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 3,
+            "location": "San Diego",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040000_00_000000_000036.mp4",
+            "date": "2010-07-01",
+            "timeslots": [
+                [
+                    "00:00-01:00",
+                    {
+                        "bench": 36,
+                        "car": 156,
+                        "person": 1,
+                        "boat": 4
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 3,
+            "location": "Phoenix",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040103_07_001011_001093.mp4",
+            "date": "2010-07-24",
+            "timeslots": [
+                [
+                    "23:00-00:00",
+                    {
+                        "car": 816,
+                        "person": 50,
+                        "truck": 4
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 8,
+            "location": "New York",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040103_08_001475_001512.mp4",
+            "date": "2010-07-08",
+            "timeslots": [
+                [
+                    "20:00-21:00",
+                    {
+                        "motorcycle": 3,
+                        "car": 372,
+                        "person": 40
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 8,
+            "location": "San Jose",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040104_00_000120_000224.mp4",
+            "date": "2010-07-10",
+            "timeslots": [
+                [
+                    "02:00-03:00",
+                    {
+                        "car": 1038,
+                        "person": 68,
+                        "truck": 8,
+                        "traffic light": 2
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 6,
+            "location": "Chicago",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040104_01_000227_000457.mp4",
+            "date": "2010-07-15",
+            "timeslots": [
+                [
+                    "14:00-15:00",
+                    {
+                        "car": 2304,
+                        "person": 279,
+                        "truck": 44
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 5,
+            "location": "Houston",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040104_02_000459_000721.mp4",
+            "date": "2010-07-15",
+            "timeslots": [
+                [
+                    "08:00-09:00",
+                    {
+                        "motorcycle": 2,
+                        "bus": 2,
+                        "car": 2687,
+                        "person": 240,
+                        "truck": 53,
+                        "boat": 3,
+                        "traffic light": 1
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 4,
+            "location": "Los Angeles",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040104_04_000854_000934.mp4",
+            "date": "2010-07-22",
+            "timeslots": [
+                [
+                    "10:00-11:00",
+                    {
+                        "motorcycle": 1,
+                        "car": 710,
+                        "person": 44,
+                        "truck": 8
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 1,
+            "location": "Houston",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040104_05_000939_001116.mp4",
+            "date": "2010-07-27",
+            "timeslots": [
+                [
+                    "10:00-11:00",
+                    {
+                        "car": 1584,
+                        "person": 54,
+                        "truck": 13,
+                        "traffic light": 2
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 9,
+            "location": "Los Angeles",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040104_06_001121_001241.mp4",
+            "date": "2010-07-25",
+            "timeslots": [
+                [
+                    "02:00-03:00",
+                    {
+                        "bus": 1,
+                        "skateboard": 3,
+                        "car": 1028,
+                        "person": 85,
+                        "truck": 30
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 2,
+            "location": "San Jose",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040104_07_001268_001348.mp4",
+            "date": "2010-07-13",
+            "timeslots": [
+                [
+                    "14:00-15:00",
+                    {
+                        "motorcycle": 1,
+                        "car": 685,
+                        "person": 54,
+                        "truck": 10
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 6,
+            "location": "San Antonio",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040104_08_001353_001470.mp4",
+            "date": "2010-07-12",
+            "timeslots": [
+                [
+                    "21:00-22:00",
+                    {
+                        "motorcycle": 3,
+                        "bus": 2,
+                        "bicycle": 4,
+                        "car": 1015,
+                        "person": 75,
+                        "truck": 46,
+                        "snowboard": 1
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 4,
+            "location": "San Antonio",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000201_03_000640_000672.mp4",
+            "date": "2010-07-31",
+            "timeslots": [
+                [
+                    "05:00-06:00",
+                    {
+                        "car": 699,
+                        "person": 4,
+                        "truck": 5
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 7,
+            "location": "San Antonio",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000201_04_000682_000822.mp4",
+            "date": "2010-07-31",
+            "timeslots": [
+                [
+                    "01:00-02:00",
+                    {
+                        "car": 2878,
+                        "person": 51,
+                        "truck": 12
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 3,
+            "location": "Houston",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000201_05_001081_001215.mp4",
+            "date": "2010-07-16",
+            "timeslots": [
+                [
+                    "07:00-08:00",
+                    {
+                        "fire hydrant": 2,
+                        "parking meter": 2,
+                        "car": 3013,
+                        "person": 64,
+                        "truck": 1
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 10,
+            "location": "Dallas",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000201_06_001354_001397.mp4",
+            "date": "2010-07-26",
+            "timeslots": [
+                [
+                    "06:00-07:00",
+                    {
+                        "car": 932,
+                        "person": 18
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 7,
+            "location": "Philadelphia",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000201_07_001485_001581.mp4",
+            "date": "2010-07-07",
+            "timeslots": [
+                [
+                    "08:00-09:00",
+                    {
+                        "bus": 4,
+                        "car": 2263,
+                        "person": 52,
+                        "truck": 9,
+                        "traffic light": 2
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 10,
+            "location": "Houston",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000201_08_001652_001838.mp4",
+            "date": "2010-07-18",
+            "timeslots": [
+                [
+                    "04:00-05:00",
+                    {
+                        "car": 4277,
+                        "person": 45,
+                        "truck": 6,
+                        "traffic light": 2
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 1,
+            "location": "Los Angeles",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000202_00_000000_000977.mp4",
+            "date": "2010-07-22",
+            "timeslots": [
+                [
+                    "15:00-16:00",
+                    {
+                        "motorcycle": 1,
+                        "bus": 43,
+                        "car": 24885,
+                        "person": 765,
+                        "truck": 79,
+                        "fire hydrant": 3,
+                        "traffic light": 15
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 4,
+            "location": "Phoenix",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000203_03_000736_000785.mp4",
+            "date": "2010-07-15",
+            "timeslots": [
+                [
+                    "14:00-15:00",
+                    {
+                        "car": 1424,
+                        "person": 21,
+                        "truck": 7,
+                        "traffic light": 1
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 5,
+            "location": "Phoenix",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000203_04_000903_001086.mp4",
+            "date": "2010-07-14",
+            "timeslots": [
+                [
+                    "14:00-15:00",
+                    {
+                        "car": 5381,
+                        "person": 257,
+                        "truck": 29
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 2,
+            "location": "Los Angeles",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000203_05_001122_001159.mp4",
+            "date": "2010-07-28",
+            "timeslots": [
+                [
+                    "23:00-00:00",
+                    {
+                        "car": 1194,
+                        "person": 10,
+                        "truck": 3
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 5,
+            "location": "San Antonio",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050000_12_001591_001619.mp4",
+            "date": "2010-07-18",
+            "timeslots": [
+                [
+                    "21:00-22:00",
+                    {
+                        "bus": 15,
+                        "car": 360,
+                        "person": 59,
+                        "truck": 101
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 7,
+            "location": "San Jose",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050000_13_001722_001766.mp4",
+            "date": "2010-07-21",
+            "timeslots": [
+                [
+                    "10:00-11:00",
+                    {
+                        "bus": 30,
+                        "car": 638,
+                        "person": 127,
+                        "truck": 156
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 4,
+            "location": "Phoenix",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050000_16_001947_001989.mp4",
+            "date": "2010-07-19",
+            "timeslots": [
+                [
+                    "01:00-02:00",
+                    {
+                        "motorcycle": 10,
+                        "bus": 5,
+                        "car": 547,
+                        "person": 68,
+                        "truck": 140,
+                        "traffic light": 1
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 5,
+            "location": "San Jose",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050201_00_000012_000116.mp4",
+            "date": "2010-07-04",
+            "timeslots": [
+                [
+                    "05:00-06:00",
+                    {
+                        "car": 2024,
+                        "person": 22,
+                        "boat": 12,
+                        "truck": 114
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 8,
+            "location": "Dallas",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050201_01_000147_000321.mp4",
+            "date": "2010-07-03",
+            "timeslots": [
+                [
+                    "09:00-10:00",
+                    {
+                        "car": 3255,
+                        "person": 34,
+                        "boat": 27,
+                        "truck": 215
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 1,
+            "location": "San Diego",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050201_02_000395_000483.mp4",
+            "date": "2010-07-25",
+            "timeslots": [
+                [
+                    "16:00-17:00",
+                    {
+                        "car": 1646,
+                        "person": 38,
+                        "boat": 5,
+                        "truck": 93
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 6,
+            "location": "New York",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050201_03_000573_000647.mp4",
+            "date": "2010-07-23",
+            "timeslots": [
+                [
+                    "02:00-03:00",
+                    {
+                        "fire hydrant": 1,
+                        "bench": 1,
+                        "car": 1451,
+                        "person": 32,
+                        "boat": 8,
+                        "truck": 99
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 3,
+            "location": "New York",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050201_04_000669_000728.mp4",
+            "date": "2010-07-05",
+            "timeslots": [
+                [
+                    "10:00-11:00",
+                    {
+                        "bus": 1,
+                        "car": 1225,
+                        "person": 1,
+                        "boat": 4,
+                        "truck": 102
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 4,
+            "location": "Phoenix",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050201_05_000890_000944.mp4",
+            "date": "2010-07-25",
+            "timeslots": [
+                [
+                    "14:00-15:00",
+                    {
+                        "fire hydrant": 1,
+                        "car": 1035,
+                        "person": 2,
+                        "boat": 19,
+                        "truck": 111
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 1,
+            "location": "Philadelphia",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040000_03_000221_000372.mp4",
+            "date": "2010-07-21",
+            "timeslots": [
+                [
+                    "19:00-20:00",
+                    {
+                        "bench": 151,
+                        "car": 799,
+                        "person": 8,
+                        "truck": 1
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 3,
+            "location": "Phoenix",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040000_04_000532_000622.mp4",
+            "date": "2010-07-21",
+            "timeslots": [
+                [
+                    "20:00-21:00",
+                    {
+                        "bench": 90,
+                        "car": 445,
+                        "person": 4
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 9,
+            "location": "Dallas",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040000_05_000668_000703.mp4",
+            "date": "2010-07-29",
+            "timeslots": [
+                [
+                    "17:00-18:00",
+                    {
+                        "bench": 35,
+                        "car": 186,
+                        "person": 1
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 10,
+            "location": "Chicago",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040000_06_000746_000964.mp4",
+            "date": "2010-07-11",
+            "timeslots": [
+                [
+                    "02:00-03:00",
+                    {
+                        "bench": 219,
+                        "car": 1084,
+                        "person": 46,
+                        "truck": 2
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 10,
+            "location": "San Antonio",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040000_07_000966_001071.mp4",
+            "date": "2010-07-03",
+            "timeslots": [
+                [
+                    "08:00-09:00",
+                    {
+                        "bench": 105,
+                        "car": 574,
+                        "person": 3,
+                        "truck": 1
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 7,
+            "location": "New York",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040000_08_001084_001190.mp4",
+            "date": "2010-07-24",
+            "timeslots": [
+                [
+                    "11:00-12:00",
+                    {
+                        "bench": 106,
+                        "car": 541,
+                        "person": 18
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 8,
+            "location": "Los Angeles",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040000_09_001194_001574.mp4",
+            "date": "2010-07-04",
+            "timeslots": [
+                [
+                    "17:00-18:00",
+                    {
+                        "bench": 370,
+                        "car": 1797,
+                        "person": 29,
+                        "truck": 5
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 2,
+            "location": "San Diego",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040001_00_000035_000319.mp4",
+            "date": "2010-07-14",
+            "timeslots": [
+                [
+                    "08:00-09:00",
+                    {
+                        "bench": 286,
+                        "car": 1280,
+                        "person": 113,
+                        "truck": 4
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 5,
+            "location": "Phoenix",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040001_01_000448_001101.mp4",
+            "date": "2010-07-26",
+            "timeslots": [
+                [
+                    "17:00-18:00",
+                    {
+                        "bench": 656,
+                        "car": 3096,
+                        "person": 187
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 4,
+            "location": "Chicago",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040001_02_001102_001530.mp4",
+            "date": "2010-07-31",
+            "timeslots": [
+                [
+                    "05:00-06:00",
+                    {
+                        "bench": 429,
+                        "car": 2065,
+                        "person": 19
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 7,
+            "location": "San Jose",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040104_09_001475_001583.mp4",
+            "date": "2010-07-06",
+            "timeslots": [
+                [
+                    "20:00-21:00",
+                    {
+                        "motorcycle": 1,
+                        "bus": 1,
+                        "cell phone": 1,
+                        "car": 929,
+                        "person": 84,
+                        "truck": 27
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 4,
+            "location": "San Antonio",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000203_06_001206_001266.mp4",
+            "date": "2010-07-06",
+            "timeslots": [
+                [
+                    "18:00-19:00",
+                    {
+                        "car": 1917,
+                        "person": 33,
+                        "truck": 23
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 9,
+            "location": "San Jose",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000203_07_001341_001458.mp4",
+            "date": "2010-07-19",
+            "timeslots": [
+                [
+                    "21:00-22:00",
+                    {
+                        "bus": 3,
+                        "car": 3700,
+                        "person": 245,
+                        "truck": 38,
+                        "traffic light": 1
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 4,
+            "location": "San Antonio",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000203_08_001702_001734.mp4",
+            "date": "2010-07-28",
+            "timeslots": [
+                [
+                    "16:00-17:00",
+                    {
+                        "bus": 1,
+                        "car": 875,
+                        "person": 7,
+                        "truck": 27,
+                        "traffic light": 1
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 9,
+            "location": "San Diego",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000203_09_001789_001842.mp4",
+            "date": "2010-07-11",
+            "timeslots": [
+                [
+                    "17:00-18:00",
+                    {
+                        "parking meter": 1,
+                        "car": 1309,
+                        "person": 37,
+                        "truck": 4,
+                        "traffic light": 4
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 1,
+            "location": "Los Angeles",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000205_00_000065_000149.mp4",
+            "date": "2010-07-04",
+            "timeslots": [
+                [
+                    "00:00-01:00",
+                    {
+                        "bus": 3,
+                        "car": 2511,
+                        "person": 21,
+                        "truck": 53
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 2,
+            "location": "New York",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000206_07_001501_001600.mp4",
+            "date": "2010-07-19",
+            "timeslots": [
+                [
+                    "10:00-11:00",
+                    {
+                        "horse": 5,
+                        "cow": 1,
+                        "car": 1606,
+                        "person": 301,
+                        "truck": 24
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 7,
+            "location": "Phoenix",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000206_08_001618_001712.mp4",
+            "date": "2010-07-09",
+            "timeslots": [
+                [
+                    "21:00-22:00",
+                    {
+                        "car": 1708,
+                        "person": 35,
+                        "truck": 31,
+                        "traffic light": 1
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 5,
+            "location": "San Antonio",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000206_09_001714_001851.mp4",
+            "date": "2010-07-04",
+            "timeslots": [
+                [
+                    "04:00-05:00",
+                    {
+                        "car": 1781,
+                        "person": 43,
+                        "truck": 31,
+                        "traffic light": 2
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 8,
+            "location": "San Jose",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000207_00_000000_000045.mp4",
+            "date": "2010-07-22",
+            "timeslots": [
+                [
+                    "06:00-07:00",
+                    {
+                        "car": 491,
+                        "person": 58,
+                        "truck": 9
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 6,
+            "location": "Los Angeles",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000207_01_000094_000156.mp4",
+            "date": "2010-07-16",
+            "timeslots": [
+                [
+                    "15:00-16:00",
+                    {
+                        "bus": 4,
+                        "car": 676,
+                        "person": 25,
+                        "truck": 3,
+                        "traffic light": 2
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 2,
+            "location": "Chicago",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000207_02_000498_000530.mp4",
+            "date": "2010-07-04",
+            "timeslots": [
+                [
+                    "05:00-06:00",
+                    {
+                        "car": 340,
+                        "person": 2,
+                        "truck": 4
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 2,
+            "location": "Los Angeles",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000207_03_000556_000590.mp4",
+            "date": "2010-07-04",
+            "timeslots": [
+                [
+                    "13:00-14:00",
+                    {
+                        "parking meter": 1,
+                        "car": 294,
+                        "person": 8,
+                        "truck": 17,
+                        "traffic light": 1
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 4,
+            "location": "New York",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000207_04_000902_000934.mp4",
+            "date": "2010-07-11",
+            "timeslots": [
+                [
+                    "21:00-22:00",
+                    {
+                        "car": 304,
+                        "person": 35,
+                        "truck": 17
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 6,
+            "location": "Philadelphia",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000207_05_001125_001193.mp4",
+            "date": "2010-07-04",
+            "timeslots": [
+                [
+                    "02:00-03:00",
+                    {
+                        "bus": 3,
+                        "car": 609,
+                        "person": 44,
+                        "truck": 23,
+                        "traffic light": 2
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 6,
+            "location": "Los Angeles",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050000_01_000207_000361.mp4",
+            "date": "2010-07-12",
+            "timeslots": [
+                [
+                    "12:00-13:00",
+                    {
+                        "bus": 146,
+                        "car": 1837,
+                        "person": 259,
+                        "truck": 440,
+                        "stop sign": 63,
+                        "boat": 1,
+                        "traffic light": 14
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 2,
+            "location": "San Antonio",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050202_04_000690_000750.mp4",
+            "date": "2010-07-21",
+            "timeslots": [
+                [
+                    "11:00-12:00",
+                    {
+                        "bus": 4,
+                        "car": 1174,
+                        "person": 19,
+                        "boat": 9,
+                        "truck": 167
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 1,
+            "location": "Los Angeles",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050203_08_001686_001885.mp4",
+            "date": "2010-07-05",
+            "timeslots": [
+                [
+                    "23:00-00:00",
+                    {
+                        "bus": 1,
+                        "car": 3860,
+                        "person": 86,
+                        "boat": 18,
+                        "truck": 48
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 3,
+            "location": "Chicago",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050203_09_001960_002083.mp4",
+            "date": "2010-07-30",
+            "timeslots": [
+                [
+                    "23:00-00:00",
+                    {
+                        "bus": 4,
+                        "car": 2425,
+                        "person": 53,
+                        "boat": 44,
+                        "bird": 1,
+                        "truck": 139
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 1,
+            "location": "New York",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050300_00_000000_000067.mp4",
+            "date": "2010-07-27",
+            "timeslots": [
+                [
+                    "11:00-12:00",
+                    {
+                        "bus": 2,
+                        "fire hydrant": 1,
+                        "car": 997,
+                        "person": 57,
+                        "truck": 215
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 1,
+            "location": "Phoenix",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050300_01_000148_000396.mp4",
+            "date": "2010-07-14",
+            "timeslots": [
+                [
+                    "11:00-12:00",
+                    {
+                        "bus": 14,
+                        "car": 4075,
+                        "person": 162,
+                        "truck": 709,
+                        "traffic light": 1
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 9,
+            "location": "Chicago",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050300_03_000726_000834.mp4",
+            "date": "2010-07-18",
+            "timeslots": [
+                [
+                    "22:00-23:00",
+                    {
+                        "car": 1509,
+                        "person": 116,
+                        "truck": 283
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 8,
+            "location": "Phoenix",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050300_04_001057_001122.mp4",
+            "date": "2010-07-03",
+            "timeslots": [
+                [
+                    "23:00-00:00",
+                    {
+                        "fire hydrant": 2,
+                        "car": 747,
+                        "person": 72,
+                        "truck": 169
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 9,
+            "location": "Phoenix",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050300_05_001272_001330.mp4",
+            "date": "2010-07-28",
+            "timeslots": [
+                [
+                    "03:00-04:00",
+                    {
+                        "car": 853,
+                        "person": 6,
+                        "truck": 149
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 2,
+            "location": "Chicago",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050300_06_001427_001616.mp4",
+            "date": "2010-07-27",
+            "timeslots": [
+                [
+                    "07:00-08:00",
+                    {
+                        "car": 2314,
+                        "person": 80,
+                        "truck": 543,
+                        "traffic light": 2
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 6,
+            "location": "San Antonio",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050300_07_001623_001690.mp4",
+            "date": "2010-07-20",
+            "timeslots": [
+                [
+                    "07:00-08:00",
+                    {
+                        "car": 973,
+                        "person": 7,
+                        "truck": 167,
+                        "traffic light": 1
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 8,
+            "location": "San Jose",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050300_08_001705_001771.mp4",
+            "date": "2010-07-17",
+            "timeslots": [
+                [
+                    "11:00-12:00",
+                    {
+                        "car": 741,
+                        "person": 27,
+                        "truck": 133,
+                        "traffic light": 2
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 1,
+            "location": "San Jose",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040005_06_000886_001016.mp4",
+            "date": "2010-07-18",
+            "timeslots": [
+                [
+                    "05:00-06:00",
+                    {
+                        "bench": 15,
+                        "car": 519,
+                        "person": 3
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 10,
+            "location": "Chicago",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040005_07_001026_001223.mp4",
+            "date": "2010-07-15",
+            "timeslots": [
+                [
+                    "14:00-15:00",
+                    {
+                        "fire hydrant": 1,
+                        "bench": 18,
+                        "car": 746,
+                        "person": 4
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 7,
+            "location": "Phoenix",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040103_00_000000_000120.mp4",
+            "date": "2010-07-23",
+            "timeslots": [
+                [
+                    "22:00-23:00",
+                    {
+                        "motorcycle": 2,
+                        "car": 1230,
+                        "person": 53
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 3,
+            "location": "Phoenix",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040103_01_000132_000195.mp4",
+            "date": "2010-07-01",
+            "timeslots": [
+                [
+                    "07:00-08:00",
+                    {
+                        "motorcycle": 1,
+                        "car": 694,
+                        "person": 11
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 5,
+            "location": "Philadelphia",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040103_02_000199_000279.mp4",
+            "date": "2010-07-09",
+            "timeslots": [
+                [
+                    "08:00-09:00",
+                    {
+                        "car": 830,
+                        "person": 100
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 8,
+            "location": "San Jose",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040103_03_000284_000425.mp4",
+            "date": "2010-07-17",
+            "timeslots": [
+                [
+                    "02:00-03:00",
+                    {
+                        "car": 1322,
+                        "person": 118
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 2,
+            "location": "Houston",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040103_05_000729_000804.mp4",
+            "date": "2010-07-27",
+            "timeslots": [
+                [
+                    "22:00-23:00",
+                    {
+                        "car": 590,
+                        "person": 81,
+                        "truck": 4
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 5,
+            "location": "San Jose",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040103_06_000836_000909.mp4",
+            "date": "2010-07-29",
+            "timeslots": [
+                [
+                    "03:00-04:00",
+                    {
+                        "car": 684,
+                        "person": 7
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 4,
+            "location": "San Jose",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000200_00_000100_000171.mp4",
+            "date": "2010-07-27",
+            "timeslots": [
+                [
+                    "10:00-11:00",
+                    {
+                        "car": 252,
+                        "person": 17,
+                        "truck": 42
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 1,
+            "location": "San Diego",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000200_01_000226_000268.mp4",
+            "date": "2010-07-28",
+            "timeslots": [
+                [
+                    "23:00-00:00",
+                    {
+                        "car": 272,
+                        "person": 3,
+                        "truck": 26
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 4,
+            "location": "Los Angeles",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000200_02_000479_000635.mp4",
+            "date": "2010-07-17",
+            "timeslots": [
+                [
+                    "05:00-06:00",
+                    {
+                        "bus": 10,
+                        "fire hydrant": 5,
+                        "car": 991,
+                        "person": 51,
+                        "truck": 87,
+                        "traffic light": 5
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 9,
+            "location": "Chicago",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000200_03_000657_000899.mp4",
+            "date": "2010-07-15",
+            "timeslots": [
+                [
+                    "01:00-02:00",
+                    {
+                        "bus": 1,
+                        "fire hydrant": 7,
+                        "car": 1580,
+                        "person": 355,
+                        "truck": 145,
+                        "traffic light": 3
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 9,
+            "location": "Los Angeles",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000205_01_000197_000342.mp4",
+            "date": "2010-07-02",
+            "timeslots": [
+                [
+                    "23:00-00:00",
+                    {
+                        "bus": 4,
+                        "car": 4460,
+                        "person": 181,
+                        "truck": 45,
+                        "traffic light": 1
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 5,
+            "location": "San Diego",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000205_02_000409_000566.mp4",
+            "date": "2010-07-02",
+            "timeslots": [
+                [
+                    "15:00-16:00",
+                    {
+                        "car": 4969,
+                        "person": 65,
+                        "truck": 7
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 10,
+            "location": "Houston",
+            "priority": "alta",
+            "video_file": "VIRAT_S_000205_04_000927_001057.mp4",
+            "date": "2010-07-13",
+            "timeslots": [
+                [
+                    "08:00-09:00",
+                    {
+                        "car": 3749,
+                        "person": 110,
+                        "truck": 27
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 4,
+            "location": "Philadelphia",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050201_06_001168_001240.mp4",
+            "date": "2010-07-13",
+            "timeslots": [
+                [
+                    "19:00-20:00",
+                    {
+                        "motorcycle": 3,
+                        "car": 1473,
+                        "person": 1,
+                        "boat": 3,
+                        "truck": 164
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 3,
+            "location": "Houston",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050201_07_001348_001458.mp4",
+            "date": "2010-07-19",
+            "timeslots": [
+                [
+                    "19:00-20:00",
+                    {
+                        "motorcycle": 1,
+                        "bus": 1,
+                        "car": 2021,
+                        "person": 30,
+                        "truck": 234
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 9,
+            "location": "New York",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050201_08_001567_001647.mp4",
+            "date": "2010-07-02",
+            "timeslots": [
+                [
+                    "05:00-06:00",
+                    {
+                        "car": 1566,
+                        "person": 10,
+                        "chair": 11,
+                        "boat": 42,
+                        "truck": 177
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 5,
+            "location": "Houston",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050201_09_001821_001876.mp4",
+            "date": "2010-07-13",
+            "timeslots": [
+                [
+                    "12:00-13:00",
+                    {
+                        "fire hydrant": 1,
+                        "car": 1104,
+                        "person": 3,
+                        "boat": 32,
+                        "truck": 87
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 1,
+            "location": "Philadelphia",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050201_11_002090_002220.mp4",
+            "date": "2010-07-31",
+            "timeslots": [
+                [
+                    "05:00-06:00",
+                    {
+                        "bus": 5,
+                        "car": 2789,
+                        "chair": 1,
+                        "person": 41,
+                        "truck": 297,
+                        "fire hydrant": 2,
+                        "parking meter": 1,
+                        "boat": 4
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 2,
+            "location": "San Jose",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050202_00_000000_000105.mp4",
+            "date": "2010-07-19",
+            "timeslots": [
+                [
+                    "16:00-17:00",
+                    {
+                        "bus": 3,
+                        "car": 2291,
+                        "person": 32,
+                        "boat": 2,
+                        "truck": 174
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 1,
+            "location": "Dallas",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050202_01_000150_000280.mp4",
+            "date": "2010-07-31",
+            "timeslots": [
+                [
+                    "11:00-12:00",
+                    {
+                        "car": 2897,
+                        "person": 33,
+                        "boat": 20,
+                        "truck": 248
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 5,
+            "location": "San Antonio",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050202_02_000447_000577.mp4",
+            "date": "2010-07-06",
+            "timeslots": [
+                [
+                    "11:00-12:00",
+                    {
+                        "bus": 1,
+                        "car": 2919,
+                        "person": 32,
+                        "boat": 3,
+                        "truck": 297
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 6,
+            "location": "Houston",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050202_03_000608_000684.mp4",
+            "date": "2010-07-19",
+            "timeslots": [
+                [
+                    "20:00-21:00",
+                    {
+                        "car": 1498,
+                        "person": 2,
+                        "boat": 1,
+                        "truck": 171
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 1,
+            "location": "Chicago",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050202_05_000857_000912.mp4",
+            "date": "2010-07-25",
+            "timeslots": [
+                [
+                    "13:00-14:00",
+                    {
+                        "bus": 1,
+                        "car": 1000,
+                        "person": 7,
+                        "boat": 8,
+                        "truck": 130
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 10,
+            "location": "Phoenix",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050202_06_001048_001115.mp4",
+            "date": "2010-07-03",
+            "timeslots": [
+                [
+                    "14:00-15:00",
+                    {
+                        "bus": 8,
+                        "car": 1169,
+                        "person": 5,
+                        "truck": 169
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 4,
+            "location": "Chicago",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050202_07_001126_001301.mp4",
+            "date": "2010-07-30",
+            "timeslots": [
+                [
+                    "01:00-02:00",
+                    {
+                        "bus": 3,
+                        "car": 3229,
+                        "person": 5,
+                        "truck": 305
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 2,
+            "location": "New York",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050202_10_002159_002233.mp4",
+            "date": "2010-07-29",
+            "timeslots": [
+                [
+                    "01:00-02:00",
+                    {
+                        "car": 1317,
+                        "person": 7,
+                        "truck": 69
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 10,
+            "location": "Philadelphia",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050203_00_000023_000097.mp4",
+            "date": "2010-07-18",
+            "timeslots": [
+                [
+                    "22:00-23:00",
+                    {
+                        "bus": 2,
+                        "car": 1448,
+                        "person": 16,
+                        "boat": 2,
+                        "truck": 95
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 3,
+            "location": "Phoenix",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050203_06_001202_001264.mp4",
+            "date": "2010-07-11",
+            "timeslots": [
+                [
+                    "21:00-22:00",
+                    {
+                        "car": 1398,
+                        "person": 7,
+                        "boat": 3,
+                        "truck": 11
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 4,
+            "location": "New York",
+            "priority": "alta",
+            "video_file": "VIRAT_S_050203_07_001288_001531.mp4",
+            "date": "2010-07-20",
+            "timeslots": [
+                [
+                    "17:00-18:00",
+                    {
+                        "bus": 3,
+                        "car": 5285,
+                        "person": 121,
+                        "boat": 60,
+                        "truck": 102
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 5,
+            "location": "Houston",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040003_01_000083_000193.mp4",
+            "date": "2010-07-13",
+            "timeslots": [
+                [
+                    "03:00-04:00",
+                    {
+                        "bench": 110,
+                        "car": 525,
+                        "person": 9,
+                        "boat": 1
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 4,
+            "location": "Houston",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040003_02_000197_000552.mp4",
+            "date": "2010-07-19",
+            "timeslots": [
+                [
+                    "18:00-19:00",
+                    {
+                        "bench": 361,
+                        "car": 1384,
+                        "person": 104,
+                        "truck": 2
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 5,
+            "location": "San Diego",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040003_03_000577_000741.mp4",
+            "date": "2010-07-01",
+            "timeslots": [
+                [
+                    "19:00-20:00",
+                    {
+                        "bench": 163,
+                        "car": 817,
+                        "person": 17,
+                        "traffic light": 1
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 7,
+            "location": "San Antonio",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040003_04_000758_001118.mp4",
+            "date": "2010-07-17",
+            "timeslots": [
+                [
+                    "02:00-03:00",
+                    {
+                        "bench": 359,
+                        "car": 1690,
+                        "person": 27,
+                        "truck": 3
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 8,
+            "location": "San Diego",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040003_05_001123_001437.mp4",
+            "date": "2010-07-01",
+            "timeslots": [
+                [
+                    "13:00-14:00",
+                    {
+                        "bench": 194,
+                        "car": 1566,
+                        "person": 19
+                    }
+                ]
+            ],
+            "alerts": []
+        },
+        {
+            "camera_id": 10,
+            "location": "San Antonio",
+            "priority": "alta",
+            "video_file": "VIRAT_S_040003_06_001441_001518.mp4",
+            "date": "2010-07-20",
+            "timeslots": [
+                [
+                    "09:00-10:00",
+                    {
+                        "bench": 16,
+                        "car": 318,
+                        "person": 2
+                    }
+                ]
+            ],
+            "alerts": []
+        }
+    ]
+}
