@@ -1,4 +1,3 @@
-// SearchEngineView.tsx
 import React, { useState } from 'react';
 import SearchInputArea from './SearchInputArea';
 import SvgIcon from './SvgIcon';
@@ -14,10 +13,7 @@ interface VideoResult {
   priority: string;
   video_file: string;
   date: string;
-  timeslots: Array<{
-    hour: string;
-    object_counts: { [key: string]: number };
-  }>;
+  timeslots: [string, { [key: string]: number }][];
   alerts: any[];
   video_path_in_hdfs: string;
 }
@@ -48,14 +44,19 @@ const SearchEngineView: React.FC<SearchEngineViewProps> = ({ onSearch }) => {
     try {
       const searchTerms = extractCocoClassesFromText(query);
       const queryParam = searchTerms.join(',');
-      const response = await fetch(`http://localhost:5000/search?q=${queryParam}`);
+      const response = await fetch(`http://localhost:4000/search?q=${queryParam}`);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data: VideoResult[] = await response.json();
-      setVideoResults(data);
+      const data = await response.json();
+
+      if (!data || !Array.isArray(data.videos)) {
+        throw new Error("Formato de respuesta no válido");
+      }
+
+      setVideoResults(data.videos);
       onSearch(query);
     } catch (e) {
       console.error("Error fetching search results:", e);
@@ -121,9 +122,9 @@ const SearchEngineView: React.FC<SearchEngineViewProps> = ({ onSearch }) => {
             )}
 
             <div className="space-y-6">
-              {videoResults.map(video => (
+              {videoResults.map((video, index) => (
                 <div
-                  key={video.camera_id + video.video_file}
+                  key={`${video.video_file}-${index}`}
                   onClick={() =>
                     setSelectedVideo({
                       title: `Cámara ${video.camera_id} - ${video.video_file}`,
@@ -145,7 +146,13 @@ const SearchEngineView: React.FC<SearchEngineViewProps> = ({ onSearch }) => {
                     <p className="text-gray-300 text-sm mb-2 line-clamp-2">
                       Archivo: {video.video_file} <br />
                       Fecha: {video.date} <br />
-                      Objetos detectados en el último timeslot: {video.timeslots[0] && Object.entries(video.timeslots[0].object_counts).map(([obj, count]) => `${obj}: ${count}`).join(', ')}
+                      Objetos detectados en el primer timeslot: {
+                        video.timeslots[0]
+                          ? Object.entries(video.timeslots[0][1])
+                              .map(([obj, count]) => `${obj}: ${count}`)
+                              .join(', ')
+                          : 'Sin datos'
+                      }
                     </p>
                     <span className="text-gray-500 text-xs">Prioridad: {video.priority}</span>
                   </div>
