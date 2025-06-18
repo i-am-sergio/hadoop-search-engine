@@ -285,8 +285,6 @@ spark-submit --master yarn --num-executors <NUM_NODES> process.py
 
 6. **Inserta los resultados válidos en la tabla Hive `jsons`.**
 
-7. **Crea la tabla Hive `json_path`** con (nombre, ruta) de los JSONs generados.
-
 ### Salidas
 
 ![Ejecución de Tarea](.docs/process.png)
