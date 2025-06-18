@@ -9,7 +9,7 @@ spark = SparkSession.builder \
 
 # Directorios
 local_video_dir = "./videos"
-hdfs_video_dir = "/videoss"
+hdfs_video_dir = "/videos"
 
 # 1. Eliminar carpeta en HDFS si ya existe
 print(f"🔁 Eliminando carpeta HDFS {hdfs_video_dir} si existe...")
@@ -30,10 +30,10 @@ datos = [(video, f"{hdfs_video_dir}/{video}") for video in video_files]
 df = spark.createDataFrame(datos, ["name", "path"])
 
 # 4. Limpiar tabla Hive si existe y luego escribir
-print("🧹 Limpiando tabla Hive videos_path2 si existe...")
-spark.sql("DROP TABLE IF EXISTS videos_path2")
+print("🧹 Limpiando tabla Hive videos_path si existe...")
+spark.sql("DROP TABLE IF EXISTS videos_path")
 print("📦 Creando nueva tabla Hive con los datos actualizados...")
-df.write.saveAsTable("videos_path2")
+df.write.saveAsTable("videos_path")
 
 # Verifica que se guardó correctamente (opcional)
 df.show()
