@@ -53,7 +53,6 @@ def convertir_a_row(res):
         camera_id=res["camera_id"],
         location=res["location"],
         priority=res["priority"],
-        #video_file=res["video_file"],
         date=res["date"],
         timeslots=[
             Row(
@@ -116,7 +115,7 @@ def analyze_video(video_path):
     return {
         "camera_id": camera_id,
         "location": location,
-        "priority": "alta",
+        "priority": priority,
         "video_file": filename,
         "date": date,
         "timeslots": [{

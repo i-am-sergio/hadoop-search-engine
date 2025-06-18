@@ -203,7 +203,7 @@ Los datos generados se guardan en una tabla Hive llamada `jsons`, lista para su 
 ### Ejecución
 
 ```bash
-spark-submit --master yarn --num-executors 4 process.py
+spark-submit --master yarn --num-executors <NUM_NODES> process.py
 ```
 
 ### Flujo del script `process.py`:
