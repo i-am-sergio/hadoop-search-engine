@@ -14,7 +14,7 @@ Este informe describe el desarrollo de un motor de búsqueda distribuido utiliza
 
 Se implementaron dos componentes principales: un **índice invertido** construido con Spark sobre Hive para una recuperación de información eficiente y completamente paralelizada, y un módulo de búsqueda que consulta directamente las tablas Hive para obtener los resultados. Todo el sistema se ejecuta sobre un clúster de al menos 4 nodos. A diferencia de soluciones tradicionales basadas en archivos JSON, este enfoque utiliza directamente **Hive como base de datos distribuida**, lo que mejora el rendimiento y escalabilidad del sistema.
 
-![Ejecucion en Master](.docs/arq.png)
+![Ejecucion en Master](.docs/Arquitectura.png)
 
 ## 2. Prerequisitos
 
