@@ -10,7 +10,9 @@ Hecho por:
 
 ## 1. Introducción
 
-Este informe describe el desarrollo del motor de búsqueda distribuido utilizando el framework Apache Hadoop. Se implementaron dos algoritmos fundamentales: el **índice invertido** para la recuperación eficiente de documentos y **PageRank** para la evaluación de la relevancia. El sistema se ejecuta sobre un clúster de mínimo 3 nodos y emplea como fuente de datos archivos JSON relacionados con videovigilancia y resultados de detección de objetos en video.
+Este informe describe el desarrollo de un motor de búsqueda distribuido utilizando el ecosistema de **Apache Hadoop**, **Hive** y **Apache Spark**. El sistema permite procesar grandes volúmenes de datos relacionados con videovigilancia, mediante la **subida de videos a HDFS** y la **carga de metadatos estructurados en tablas Hive**.
+
+Se implementaron dos componentes principales: un **índice invertido** construido con Spark sobre Hive para una recuperación de información eficiente y completamente paralelizada, y un módulo de búsqueda que consulta directamente las tablas Hive para obtener los resultados. Todo el sistema se ejecuta sobre un clúster de al menos 4 nodos. A diferencia de soluciones tradicionales basadas en archivos JSON, este enfoque utiliza directamente **Hive como base de datos distribuida**, lo que mejora el rendimiento y escalabilidad del sistema.
 
 ![Ejecucion en Master](.docs/arq.png)
 
@@ -18,122 +20,38 @@ Este informe describe el desarrollo del motor de búsqueda distribuido utilizand
 
 ### 2.1 Configuración del Clúster Hadoop
 
+El clúster está compuesto por las siguientes versiones de software:
+
+- Hadoop 3.3.6
+- Hive 3.1.3
+- Spark 3.2.0
+
+Los archivos de configuración se encuentran en la carpeta `config` e incluyen:
+
+- `core-site.xml`
+- `hdfs-site.xml`
+- `mapred-site.xml`
+- `yarn-site.xml`
+- `hive-site.xml`
+- `hive-env.sh`
+- `spark-defaults.conf`
+- `spark-env.sh`
+
+En todos los archivos, cualquier referencia al nombre de host **fedora** debe reemplazarse por el nombre del nodo **master** del clúster, ya que _fedora_ actúa como nodo maestro.
+Además, en `hive-site.xml` se configura la conexión al servidor MySQL, ya sea de forma local o en la nube, para el funcionamiento del metastore de Hive.
+
 #### 2.1.1 Topología y preparación
 
 Clúster de cuatro nodos y Java 8:
 
 | IP           | Hostname      |
 | ------------ | ------------- |
-| 10.7.135.140 | fedora        |
-| 10.7.135.0   | debian        |
-| 10.7.134.197 | paul (master) |
-| 10.7.135.212 | aldo-nitro    |
+| XX.XX.XX.XXX | fedora        |
+| XX.XX.XX.XXX | debian        |
+| XX.XX.XX.XXX | paul (master) |
+| XX.XX.XX.XXX | aldo-nitro    |
 
-- Instala Java, habilita SSH sin contraseña y genera claves.
-
-```bash
-sudo apt update
-sudo apt install openjdk-8-jdk openssh-server
-sudo adduser hadoop
-sudo usermod -aG sudo hadoop
-su - hadoop
-ssh-keygen -t rsa
-cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
-```
-
-- Descarga y despliega Hadoop 3.3.6.
-
-```bash
-wget https://dlcdn.apache.org/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz
-tar xzf hadoop-3.3.6.tar.gz
-mv hadoop-3.3.6 hadoop
-```
-
-- Configura las variables de entorno para Hadoop.
-
-```bash
-# Añadir a ~/.bashrc
-export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-export HADOOP_HOME=/home/hadoop/hadoop
-export HADOOP_INSTALL=$HADOOP_HOME
-export HADOOP_MAPRED_HOME=$HADOOP_HOME
-export HADOOP_COMMON_HOME=$HADOOP_HOME
-export HADOOP_HDFS_HOME=$HADOOP_HOME
-export HADOOP_YARN_HOME=$HADOOP_HOME
-export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
-export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin
-export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"
-source ~/.bashrc
-```
-
-- Formatea el NameNode e inicia todos los servicios Hadoop/YARN.
-
-```bash
-hdfs namenode -format
-start-all.sh
-yarn node -list
-```
-
-#### 2.2.1 Configuración XML
-
-##### `core-site.xml`
-
-- Define el sistema de archivos por defecto y ajusta buffer I/O.
-
-```xml
-<configuration>
-  <property><name>fs.defaultFS</name><value>hdfs://paul:9000</value></property>
-  <property><name>io.file.buffer.size</name><value>65536</value></property>
-</configuration>
-```
-
-##### `hdfs-site.xml`
-
-- Configura replicación, directorios de datos, tamaño de bloque y buffers de socket.
-
-```xml
-<configuration>
-  <property><name>dfs.replication</name><value>4</value></property>
-  <property><name>dfs.name.dir</name><value>file:///home/hadoop/hadoopdata/hdfs/namenode</value></property>
-  <property><name>dfs.data.dir</name><value>file:///home/hadoop/hadoopdata/hdfs/datanode</value></property>
-  <property><name>dfs.blocksize</name><value>268435456</value></property>
-  <property><name>dfs.client.socket.send.buffer.size</name><value>131072</value></property>
-  <property><name>dfs.client.socket.receive.buffer.size</name><value>131072</value></property>
-  <property><name>dfs.datanode.max.transfer.threads</name><value>16384</value></property>
-  <property><name>dfs.permissions</name><value>false</value></property>
-</configuration>
-```
-
-##### `mapred-site.xml`
-
-- Indica que MapReduce corre sobre YARN y configura el JobHistory.
-
-```xml
-<configuration>
-  <property><name>mapreduce.framework.name</name><value>yarn</value></property>
-  <property><name>mapreduce.jobhistory.address</name><value>paul:10020</value></property>
-  <property><name>mapreduce.jobhistory.webapp.address</name><value>paul:19888</value></property>
-  <property><name>yarn.app.mapreduce.am.env</name><value>HADOOP_MAPRED_HOME=/home/hadoop/hadoop</value></property>
-  <property><name>mapreduce.map.env</name><value>HADOOP_MAPRED_HOME=/home/hadoop/hadoop</value></property>
-  <property><name>mapreduce.reduce.env</name><value>HADOOP_MAPRED_HOME=/home/hadoop/hadoop</value></property>
-</configuration>
-```
-
-##### `yarn-site.xml`
-
-- Define el ResourceManager y aux-servicios para shuffle.
-
-```xml
-<configuration>
-  <property><name>yarn.resourcemanager.hostname</name><value>paul</value></property>
-  <property><name>yarn.resourcemanager.scheduler.address</name><value>paul:8030</value></property>
-  <property><name>yarn.resourcemanager.resource-tracker.address</name><value>paul:8025</value></property>
-  <property><name>yarn.resourcemanager.admin.address</name><value>paul:8011</value></property>
-  <property><name>yarn.nodemanager.aux-services</name><value>mapreduce_shuffle</value></property>
-</configuration>
-```
-
-##### `workers`
+#### 2.1.2 `workers`
 
 ```xml
 paul
@@ -142,658 +60,618 @@ debian
 aldo-nitro
 ```
 
-### 2.2 Dataset de Videos
+### 2.1 Instalar Python 3.9.18 con `pyenv`
 
-Para este proyecto se utilizó el dataset **VIRAT Video Dataset Release 2.0**, un conjunto de datos de aproximadamente **13 GB** de videos de vigilancia realistas, ideal para tareas de detección y análisis de actividades humanas.
-
-El dataset puede descargarse desde el siguiente enlace oficial:
-
-🔗 [VIRAT Video Dataset - Kitware](https://data.kitware.com/#collection/56f56db28d777f753209ba9f/folder/56f581ce8d777f753209ca43)
-
-![Ejecución en el nodo Master](.docs/dataset.png)
-
-#### 2.2.1 Carga de videos en HDFS
-
-Para que los nodos del clúster de Hadoop puedan procesar los videos, es necesario cargarlos en el sistema de archivos distribuido **HDFS**. A continuación, se detallan los pasos:
-
-1. **Crear el directorio destino en HDFS:**
+#### 1. Instalar dependencias necesarias
 
 ```bash
-hdfs dfs -mkdir -p /videos_mp4
+sudo dnf install -y gcc zlib-devel bzip2 bzip2-devel \
+readline-devel sqlite sqlite-devel openssl-devel \
+xz xz-devel libffi-devel make git
 ```
 
-2. **Subir los archivos `.mp4` desde el sistema local:**
-
-Asumiendo que los videos se encuentran en el directorio local `videos_mp4/`:
+#### 2. Instalar y configurar `pyenv`
 
 ```bash
-hdfs dfs -put videos_mp4/* /videos_mp4/
+curl https://pyenv.run | bash
 ```
 
-Esto almacena todos los videos en el directorio `/videos_mp4/` de HDFS, donde estarán disponibles para su procesamiento distribuido.
-
-![Ejecución en el nodo Master](.docs/put%20videos.png)
-![Ejecución en el nodo Master](.docs/put%20videos_2.png)
-
-### 2.3 Preparación de Nodos
-
-Cada nodo debe tener instalado:
+Agregar al final del archivo `~/.bashrc`:
 
 ```bash
-pip install ultralytics opencv-python
+export PATH="$HOME/.pyenv/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
 ```
 
-Y debe contener en su directorio raíz:
-
-- `process.py` — analiza un video y genera el `.json` correspondiente en HDFS.
-- `daemon.py` — escucha el archivo `/tmp/videos_a_procesar.txt` y ejecuta `process.py` automáticamente cuando hay un nuevo video.
-
-## 3. Procesamiento de Videos
-
-Se implementa un sistema distribuido de análisis de videos usando **YOLOv8** sobre un clúster **Hadoop**. El sistema extrae información de los videos y genera archivos `.json` con los resultados, permitiendo procesamiento paralelo entre nodos.
-
-### 3.1 Subir modelo YOLOv8
-
-Asumiendo que el modelo `yolov8n.pt` está en tu directorio actual:
+Actualizar el entorno:
 
 ```bash
-hdfs dfs -put yolov8n.pt /models/
+source ~/.bashrc
 ```
 
-> Revisa que ambos recursos se hayan subido correctamente con:
+Verificar que `pyenv` esté disponible:
 
 ```bash
-hdfs dfs -ls /videos_mp4
+pyenv --version
+```
+
+#### 3. Instalar Python y crear entorno virtual
+
+```bash
+pyenv install 3.9.18
+pyenv virtualenv 3.9.18 pyspark-env
+pyenv activate pyspark-env
+```
+
+#### 4. Instalar librerías necesarias
+
+```bash
+python3 -m pip install opencv-python ultralytics
+```
+
+#### 5. Verificar instalación
+
+```bash
+python3 -c "import cv2; print('OpenCV OK')"
+python3 -c "from ultralytics import YOLO; print('Ultralytics OK')"
+```
+
+### 2.2 Configurar Spark con Python 3.9.18
+
+Editar el archivo `~/.bashrc`:
+
+```bash
+nano ~/.bashrc
+```
+
+Agregar al final del archivo:
+
+```bash
+export PYSPARK_PYTHON="$HOME/.pyenv/versions/pyspark-env/bin/python"
+export PYSPARK_DRIVER_PYTHON="$HOME/.pyenv/versions/pyspark-env/bin/python"
+```
+
+Actualizar el entorno:
+
+```bash
+source ~/.bashrc
+```
+
+Probar configuración abriendo Spark:
+
+```bash
+pyspark --master yarn
+```
+
+Y luego ejecutando en la consola de PySpark:
+
+```python
+import sys
+print("Python executable:", sys.executable)
+print("Python version:", sys.version)
+```
+
+La salida debe ser similar a:
+
+```bash
+>>> print(sys.executable)
+/home/hadoop/.pyenv/versions/pyspark-env/bin/python
+>>> print(sys.version)
+3.9.18 (main, Jun 12 2025, 10:05:39)
+[GCC 14.2.1 20240912 (Red Hat 14.2.1-3)]
+```
+
+### 2.3 Subir modelo YOLOv8 a HDFS
+
+#### 1. Crear carpeta para modelos en HDFS
+
+```bash
+hdfs dfs -mkdir -p /models
+```
+
+#### 2. Subir modelo YOLOv8
+
+```bash
+hdfs dfs -put ./processVideo/yolov8n.pt /models/
+```
+
+#### 3. Verificar que el modelo esté en HDFS
+
+```bash
 hdfs dfs -ls /models
 ```
 
-![Ejecucion en Master](.docs/yolo.png)
+---
 
-### 3.2 Descripción de Proceso
+## 3. Modulo: Carga de Videos al HDFS
 
-- Se usa `process.py` para analizar videos mediante YOLOv8 y generar archivos `.json` con los objetos detectados.
+Automatiza la carga de videos a HDFS y deja una tabla Hive lista para consultas posteriores sin tener que manejar rutas manualmente.
 
-```python
-import cv2
-from ultralytics import YOLO
-import json
-import os
-from datetime import datetime, timedelta
-from collections import defaultdict
-import subprocess
-import sys
-import random
+### Pasos para ejecutar
 
-local_model_path = "/tmp/yolov8n.pt"
-hdfs_model_path = "/models/yolov8n.pt"
+1. Crea una carpeta llamada `videos` y coloca dentro todos los archivos `.mp4` que deseas subir.
+2. Verifica que el script de la carpeta `processVideo`, `upload_videos_to_hive.py` esté en el mismo nivel que la carpeta `videos`.
 
-if not os.path.exists(local_model_path):
-    print(f"Copiando modelo desde HDFS {hdfs_model_path} a local {local_model_path}")
-    subprocess.run(["hdfs", "dfs", "-copyToLocal", hdfs_model_path, local_model_path], check=True)
-
-MODEL_PATH = local_model_path
-FPS_ANALYSIS = 1
-ciudades_arequipa = [
-        "Arequipa Centro",
-        "Yanahuara",
-        "Cayma",
-        "José Luis Bustamante y Rivero",
-        "Sabandía"
-    ]
-model = YOLO(MODEL_PATH)
-def analyze_video(video_path):
-    filename = os.path.basename(video_path)
-
-    camera_id = random.randint(0, 5)
-    location = random.choice(ciudades_arequipa)
-    date = datetime.now().strftime("%Y-%m-%d")
-
-    cap = cv2.VideoCapture(video_path)
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    frame_interval = int(fps * FPS_ANALYSIS)
-    base_time = datetime.strptime(date + " 00:00:00", "%Y-%m-%d %H:%M:%S")
-
-    frame_index = 0
-    frames_to_analyze = []
-
-    print("Cargando frames para detección...")
-
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            break
-
-        if frame_index % frame_interval == 0:
-            frames_to_analyze.append((frame_index, frame.copy()))
-
-        frame_index += 1
-
-    cap.release()
-
-    print(f"Procesando {len(frames_to_analyze)} frames por lotes...")
-    batch_size=1
-    counts_by_hour = defaultdict(lambda: defaultdict(int))
-    random_hour = random.randint(0, 23)
-    start_hour_str = f"{random_hour:02d}:00"
-    end_hour = (random_hour + 1) % 24
-    end_hour_str = f"{end_hour:02d}:00"
-    hour_slot = f"{start_hour_str}-{end_hour_str}"
-    for i in range(0, len(frames_to_analyze), batch_size):
-        batch = frames_to_analyze[i:i+batch_size]
-        frames_batch = [f[1] for f in batch]
-        try:
-            detections = model(frames_batch, verbose=False)
-            for (_, _), result in zip(batch, detections):
-                for det in result.boxes.data.tolist():
-                    cls_id = int(det[5])
-                    cls_name = model.names[cls_id]
-                    counts_by_hour[hour_slot][cls_name] += 1
-        except Exception as e:
-            print(f"⚠️  Error procesando lote desde frame {batch[0][0]}: {e}", file=sys.stderr)
-            continue
-
-    output = {
-        "camera_id": camera_id,
-        "location": location,
-        "priority": "alta",
-        "video_file": filename,
-        "date": date,
-        "timeslots": [
-            {
-                "hour": hour,
-                "object_counts": dict(counts_by_hour[hour])
-            } for hour in sorted(counts_by_hour)
-        ],
-        "alerts": []
-    }
-
-    return output
-
-def save_custom_json(path, key, data):
-    with open(path, "w", encoding="utf-8") as f:
-        f.write(f'"{key}": ')
-        json.dump(data, f, indent=4, ensure_ascii=False)
-        f.write("\n")
-
-def run_mapper():
-    for line in sys.stdin:
-        video_hdfs = line.strip()
-        if not video_hdfs:
-            continue
-        try:
-            print(f"Procesando video: {video_hdfs}", file=sys.stderr)
-            local_video = "/tmp/" + os.path.basename(video_hdfs)
-            if os.path.exists(local_video):
-                os.remove(local_video)
-            subprocess.run(["hdfs", "dfs", "-copyToLocal", video_hdfs, local_video], check=True)
-
-            result = analyze_video(local_video)
-
-            json_basename = os.path.splitext(os.path.basename(video_hdfs))[0] + ".json"
-            local_json = "/tmp/" + json_basename
-            json_hdfs = "/output/" + json_basename
-
-            save_custom_json(local_json, json_basename, result)
-
-            subprocess.run(["hdfs", "dfs", "-copyFromLocal", "-f", local_json, json_hdfs], check=True)
-            print(f"JSON guardado en HDFS: {json_hdfs}", file=sys.stderr)
-
-            os.remove(local_video)
-            os.remove(local_json)
-
-        except Exception as e:
-            print(f"Error procesando {video_hdfs}: {e}", file=sys.stderr)
-
-def main():
-    if len(sys.argv) == 4 and sys.argv[1] == "--local":
-        video_path = sys.argv[2]
-        json_path = sys.argv[3]
-
-        print(f"Modo local: analizar video {video_path} y guardar JSON en {json_path}")
-        result = analyze_video(video_path)
-        video_basename = os.path.basename(video_path)
-        json_key = os.path.splitext(video_basename)[0] + ".json"
-
-        save_custom_json(json_path, json_key, result)
-        print(f"✅ JSON generado localmente: {json_path}")
-        return
-    if len(sys.argv) == 2:
-        video_hdfs = sys.argv[1]
-        video_basename = os.path.basename(video_hdfs)
-        json_basename = os.path.splitext(video_basename)[0] + ".json"
-        json_hdfs = "/output/" + json_basename
-
-        local_video = "/tmp/" + video_basename
-        local_json = "/tmp/" + json_basename
-        if os.path.exists(local_video):
-            os.remove(local_video)
-        subprocess.run(["hdfs", "dfs", "-copyToLocal", video_hdfs, local_video], check=True)
-        result = analyze_video(local_video)
-
-        video_basename = os.path.basename(local_video)
-        save_custom_json(local_json, json_basename, result)
-
-        subprocess.run(["hdfs", "dfs", "-copyFromLocal", "-f", local_json, json_hdfs], check=True)
-        print(f"JSON guardado en HDFS: {json_hdfs}")
-        os.remove(local_video)
-        os.remove(local_json)
-        return
-    run_mapper()
-if __name__ == "__main__":
-    main()
+```
+|-- videos
+|    |-- *.mp4
+|-- upload_videos_to_hive.py
 ```
 
-- Para distribuir la carga en Hadoop Streaming, se implementó `holacopy.py`, que lee rutas de videos desde archivos `.txt` y las envía como input a los nodos.
-
-```python
-import sys
-import socket
-
-for line in sys.stdin:
-    video = line.strip()
-    with open("/tmp/videos_a_procesar.txt", "a") as f:
-        f.write(video + "\n")
-    print(f"Hola mundo desde nodo {socket.gethostname()} with {video}")
-```
-
-- Cada nodo ejecuta un `daemon.py` que escucha nuevas rutas de videos desde un archivo local `/tmp/videos_a_procesar.txt` y lanza `process.py` cuando hay un nuevo video.
-
-```python
-import time
-import subprocess
-import os
-
-archivo_videos = "/tmp/videos_a_procesar.txt"
-procesados = set()
-
-while True:
-    if os.path.exists(archivo_videos):
-        with open(archivo_videos, "r") as f:
-            videos = [line.strip() for line in f if line.strip()]
-
-        for video in videos:
-            if video not in procesados:
-                print(f"Procesando {video}")
-                subprocess.run(['python3', 'process.py', video])
-                procesados.add(video)
-    time.sleep(5)
-```
-
-- El archivo `reducer.py` reporta qué videos se han procesado correctamente.
-
-```python
-import sys
-
-for line in sys.stdin:
-    print(line.strip())
-```
-
-- Los `.json` generados por cada nodo se almacenan en una carpeta de salida dentro del HDFS.
-
-### 3.3 Subir rutas de videos al HDFS
+3. Ejecuta el script con Spark en modo YARN:
 
 ```bash
-mkdir -p input_parts
-
-for video in videos_mp4/*; do
-  filename=$(basename "$video")
-  echo "/videos_mp4/$filename" > "input_parts/${filename}.txt"
-done
-
-hdfs dfs -rm -r -f /input_parts
-hdfs dfs -mkdir -p /input_parts
-hdfs dfs -put input_parts/* /input_parts/
+spark-submit --master yarn upload_videos_to_hive.py
 ```
 
-![Ejecucion en Master](.docs/txt_videos.png)
+Este script realizará las siguientes tareas:
 
-### 3.4 Ejecutar el trabajo MapReduce
+- Subirá todos los videos al HDFS bajo `/videoss/`
+- Creará (o reemplazará) una tabla de Hive llamada `videos_path`
+- Esta tabla contendrá dos columnas: `name` (nombre del video) y `path` (ruta en HDFS)
+
+### Flujo del `upload_videos_to_hive.py`:
+
+1. **Inicia una sesión de Spark con soporte para Hive.**
+   Permite ejecutar comandos SQL y guardar tablas en Hive.
+
+2. **Elimina la carpeta `/videos` en HDFS si ya existe.**
+   Esto asegura que no haya archivos antiguos.
+
+3. **Sube todos los archivos `.mp4` desde la carpeta local `./videos` a HDFS** en `/videos`.
+
+4. **Crea un DataFrame con el nombre y la ruta HDFS de cada video.**
+
+5. **Elimina la tabla Hive `videos_path` si existe y crea una nueva** con los datos cargados.
+
+6. **Muestra en consola el contenido de la tabla** para verificar que se cargaron correctamente.
+
+### Salidas
+
+![Videos en HDFS](.docs/videos.png)
+
+![Videos en Hive](.docs/videos_2.png)
+
+---
+
+## 4. Modulo: Procesamiento de Videos con YOLO
+
+El archivo `process.py` de la carpeta `processVideo`, se encarga de analizar videos usando YOLOv8 y generar un resumen estructurado con información como:
+
+- Nombre del video, cámara, ubicación, prioridad y fecha.
+- Conteo de objetos por franjas horarias.
+- Alertas detectadas (si hubiera).
+
+```sql
+video_name STRING,
+camera_id INT,
+location STRING,
+priority STRING,
+date STRING,
+timeslots ARRAY<STRUCT<
+    hour: STRING,
+    object_counts: MAP<STRING, INT>
+>>,
+alerts ARRAY<STRING>
+```
+
+Los datos generados se guardan en una tabla Hive llamada `jsons`, lista para su análisis posterior.
+
+### Ejecución
 
 ```bash
-hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming*.jar \
-  -files holacopy.py,reducer.py \
-  -mapper holacopy.py \
-  -reducer reducer.py \
-  -input /input_parts \
-  -output /output_resultados_yolo_$(date +%s)
+spark-submit --master yarn --num-executors <NUM_NODES> process.py
 ```
 
-### 3.5 Requisitos por nodo
+### Flujo del script `process.py`:
 
-```bash
-python daemon.py &
-rm /tmp/videos_a_procesar.txt
-```
+1. **Inicializa Spark con soporte Hive.**
 
-Este demonio estará en espera de nuevas rutas y ejecutará automáticamente el procesamiento.
+2. **Crea tabla Hive `jsons`** con el esquema definido, almacenada en formato Parquet.
 
-![Ejecucion en Master](.docs/ejecucion_process.png)
+3. **Lee los paths de videos desde la tabla Hive `videos_path`.**
 
-### 3.6 Requisitos en el nodo maestro
+4. **Distribuye el procesamiento de videos entre los nodos** usando `.mapPartitions()`, donde:
 
-Debe contener:
+   - Cada nodo descarga sus videos desde HDFS.
+   - Usa YOLOv8 para detectar objetos.
+   - Cuenta objetos por franjas horarias.
+   - Retorna los resultados.
 
-- `holacopy.py`
-- `reducer.py`
-- `process.py`
-- `daemon.py`
+5. **Recoge los resultados procesados**:
 
-El trabajo se lanza con:
+   - Separa logs y resultados válidos.
 
-```bash
-hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming*.jar \
-  -files holacopy.py,reducer.py \
-  -mapper holacopy.py \
-  -reducer reducer.py \
-  -input /input_parts \
-  -output /output_resultados_yolo_$(date +%s)
-```
+6. **Inserta los resultados válidos en la tabla Hive `jsons`.**
 
-![Ejecucion en Master](.docs/ejecucion_process_master.png)
+7. **Crea la tabla Hive `json_path`** con (nombre, ruta) de los JSONs generados.
 
-### 3.7 Salidas
+### Salidas
 
-- Application job:
-  ![Ejecucion en Master](.docs/app_process.png)
+![Ejecución de Tarea](.docs/process.png)
 
-- HDFS:
-  ![Ejecucion en Master](.docs/dir_process.png)
-- Json in HDFS:
-  ![Ejecucion en Master](.docs/json_process.png)
+![Ejecución de Tarea](.docs/process_1.png)
 
-## 4. Modulo: Indice Invertido
+![data en Hive](.docs/process_2.png)
 
-Este flujo de trabajo tiene como objetivo la creación de un índice invertido a partir de los metadatos de videos almacenados en archivos JSON. El proceso se lleva a cabo en un entorno Hadoop utilizando MapReduce. Los archivos JSON contienen información relevante sobre los videos, y el índice invertido se construye a partir de las palabras y fechas presentes en dichos metadatos.
+---
 
-### Flujo de Trabajo:
+## 5. Modulo: Indice Invertido
 
-1. **Generación de los archivos JSON**:
-   En un proceso previo, se generan archivos JSON que contienen la metadata de los videos, estos archivos se colocan en el directorio `/user/hadoop/output` dentro de HDFS.
+### Descripción General
 
-2. **Ejecutando el comando de Hadoop**:
-   Se ejecuta el siguiente comando para crear el índice invertido:
+Este proyecto integra Hadoop, Hive y Spark para procesar una gran cantidad de videos almacenados en el HDFS (Hadoop Distributed File System). El flujo de trabajo está dividido en módulos, siendo el primer módulo el encargado de procesar los videos y almacenarlos en una tabla de Hive. A partir de esta tabla, se genera un índice invertido que es procesado por el módulo de Spark. El índice invertido permite asociar palabras (entidades) a los videos en los que aparecen, facilitando la búsqueda y el análisis de los mismos.
 
-   ```
-   hadoop jar inverted-index-1.0-SNAPSHOT.jar /user/hadoop/output /user/hadoop/outputJson
+### Estructura de la Tabla de Entrada: `jsons`
+
+La tabla `jsons` contiene información sobre los videos, incluyendo metadatos como el nombre del video, ID de la cámara, ubicación, prioridad, fecha, franjas horarias y alertas. La estructura de la tabla es la siguiente:
+
+| **Columna**  | **Tipo de Datos**                                              | **Descripción**                                                                                                 |
+| ------------ | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `video_name` | `STRING`                                                       | El nombre del archivo de video.                                                                                 |
+| `camera_id`  | `INT`                                                          | El ID de la cámara que grabó el video.                                                                          |
+| `location`   | `STRING`                                                       | La ubicación donde se grabó el video.                                                                           |
+| `priority`   | `STRING`                                                       | La prioridad asociada al video, como "alta", "media", o "baja".                                                 |
+| `date`       | `STRING`                                                       | La fecha en que se grabó el video.                                                                              |
+| `timeslots`  | `ARRAY<STRUCT<hour: STRING, object_counts: MAP<STRING, INT>>>` | Un array de franjas horarias, cada una con la hora específica y un mapa de objetos detectados durante esa hora. |
+| `alerts`     | `ARRAY<STRING>`                                                | Un array de alertas generadas durante la grabación del video.                                                   |
+
+### Objetivo del Módulo
+
+El objetivo de este módulo es procesar los datos contenidos en la tabla `jsons` de Hive y crear un índice invertido. Este índice asociará cada "entidad" (palabra) con los nombres de los archivos en los que aparece. La salida de este proceso se almacena en una nueva tabla de Hive llamada `invertedIndex`.
+
+### Estructura de la Tabla de Salida: `invertedIndex`
+
+La tabla de salida `invertedIndex` tiene la siguiente estructura:
+
+| **Columna** | **Tipo de Datos** | **Descripción**                                                                                                    |
+| ----------- | ----------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `entity`    | `STRING`          | Una palabra o entidad extraída del contenido del video. Este valor es una palabra que aparece en uno o más videos. |
+| `files`     | `ARRAY<STRING>`   | Un array de nombres de archivos (videos) en los que aparece la entidad.                                            |
+
+La tabla `invertedIndex` es el índice invertido que se genera a partir de la tabla `jsons`. En este índice, cada "entidad" (palabra) se asocia con los videos donde esa palabra aparece, lo que facilita realizar búsquedas eficientes en los datos.
+
+### Proceso de Índice Invertido
+
+1. **Entrada y Configuración de SparkSession**
+   El programa comienza leyendo los datos de la tabla `jsons` de Hive. Se configura una `SparkSession` con soporte para Hive, lo que permite interactuar con Hive directamente.
+
+   ```scala
+   val spark = SparkSession.builder()
+     .appName("Structured Inverted Index from Hive Table")
+     .enableHiveSupport() // Conexión a Hive
+     .getOrCreate()
    ```
 
-   Este comando procesa los archivos JSON de metadatos que están en `/user/hadoop/output` y genera el índice invertido en el directorio `/user/hadoop/outputJson` de HDFS.
+2. **Lectura de los Datos de Hive**
+   Utilizando la función `spark.table()`, se leen los datos de la tabla `jsons` de Hive y se cachea el DataFrame para optimizar el rendimiento si se va a usar varias veces.
 
-3. **Procesamiento posterior**:
-   Una vez generado el índice invertido, el backend de la aplicación tomará los archivos en `/user/hadoop/outputJson` para realizar el procesamiento adicional y generar la información que se utilizará en el análisis de los datos.
+   ```scala
+   val sourceDF = spark.table(sourceTableName)
+   sourceDF.cache()
+   ```
 
-Ahora, el proceso de MapReduce que hemos implementado consta de tres clases principales:
+3. **Extracción de Entidades de las Columnas**
+   A continuación, se extraen las "entidades" de varias columnas de la tabla `jsons` y se unifican en un solo DataFrame. Para cada columna, se procesan los valores y se crean nuevas columnas para cada "entidad" encontrada.
 
-- **InvertedIndexMapper.java**: Esta clase es responsable de mapear los datos de entrada y extraer las palabras y fechas relevantes.
-- **InvertedIndexReducer.java**: Esta clase agrupa las palabras por su aparición en los documentos y construye el índice invertido.
-- **InvertedIndexDriver.java**: Es el controlador que configura y ejecuta el trabajo de MapReduce.
+   - **Entidades de la columna `location`**:
+     Se dividen las ubicaciones en palabras y se procesan.
 
-### Código de las Clases
+   - **Entidades de la columna `priority`**:
+     Se procesan las prioridades en minúsculas.
 
-A continuación se muestra el código completo de cada una de las clases mencionadas.
+   - **Entidades de la columna `date`**:
+     Las fechas se utilizan directamente como entidades.
+
+   - **Entidades de la columna `camera_id`**:
+     Se convierte el `camera_id` a `STRING` y se procesa.
+
+   - **Entidades de las columnas complejas**:
+     Se "explotan" las columnas `timeslots` y `alerts` para extraer las horas y objetos de los mapas, así como las alertas.
+
+   ```scala
+   val locationEntities = sourceDF
+     .where($"location".isNotNull)
+     .select($"video_name", explode(split(lower($"location"), " ")).as("entity"))
+     .filter($"entity" =!= "")
+
+   val priorityEntities = sourceDF
+     .where($"priority".isNotNull)
+     .select($"video_name", lower($"priority").as("entity"))
+
+   val dateEntities = sourceDF
+     .where($"date".isNotNull)
+     .select($"video_name", $"date".as("entity"))
+
+   val cameraIdEntities = sourceDF
+     .where($"camera_id".isNotNull)
+     .select($"video_name", $"camera_id".cast("string").as("entity"))
+
+   val timeslotsExploded = sourceDF
+     .where($"timeslots".isNotNull)
+     .select($"video_name", explode($"timeslots").as("timeslot"))
+
+   val hourEntities = timeslotsExploded
+     .select($"video_name", $"timeslot.hour".as("entity"))
+
+   val objectEntities = timeslotsExploded
+     .select($"video_name", explode(map_keys($"timeslot.object_counts")).as("entity"))
+
+   val alertEntities = sourceDF
+     .where($"alerts".isNotNull)
+     .select($"video_name", explode($"alerts").as("entity"))
+   ```
+
+4. **Unificación de los DataFrames de Entidades**
+   Los DataFrames resultantes de cada columna se combinan en un solo DataFrame usando la función `unionByName`, para formar un conjunto único de entidades con los correspondientes nombres de video.
+
+   ```scala
+   val allEntitiesDF = Seq(
+     locationEntities,
+     priorityEntities,
+     dateEntities,
+     cameraIdEntities,
+     hourEntities,
+     objectEntities,
+     alertEntities
+   ).reduce(_ unionByName _)
+   ```
+
+5. **Construcción del Índice Invertido**
+   El índice invertido se construye agrupando las entidades y agregando los nombres de los videos en los que aparecen. Se eliminan duplicados para asegurarse de que cada entidad se asocie solo una vez con un video.
+
+   ```scala
+   val invertedIndexDF = allEntitiesDF
+     .distinct()
+     .groupBy("entity")
+     .agg(collect_list("video_name").as("files"))
+   ```
+
+6. **Guardar el Índice Invertido en Hive**
+   Finalmente, el DataFrame con el índice invertido se guarda en una nueva tabla de Hive llamada `invertedIndex`, sobrescribiendo cualquier tabla existente.
+
+   ```scala
+   invertedIndexDF.write
+     .mode("overwrite") // Sobrescribir si la tabla ya existe
+     .saveAsTable(targetTableName)
+   ```
+
+### Ejecución del Módulo
+
+Para ejecutar el módulo de índice invertido en el clúster de Spark, se debe usar el siguiente comando `spark-submit` (el archivo esta en la carpeta `processVideo`):
+
+```bash
+spark-submit --class com.stdatalabs.SparkInvertedIndex.DriverToHive \
+             --master yarn \
+             target/SparkInvertedIndex-0.0.1-SNAPSHOT.jar
+```
+
+Este módulo es parte del flujo de trabajo que procesa grandes volúmenes de datos (videos) y genera un índice invertido útil para realizar búsquedas eficientes dentro de los videos almacenados en Hive. El siguiente módulo trabajara con esta tabla generada para realizar las consultas.
+
+### Salida
+
+![data en Hive](.docs/index.png)
 
 ---
 
-### **1. InvertedIndexMapper.java**
+## 6. Modulo: Backend
 
-```java
-package com.example;
+El módulo backend está compuesto por **dos microservicios independientes**, cada uno con responsabilidades específicas y ejecutándose en diferentes puertos. Esta arquitectura basada en microservicios permite escalar, mantener y desplegar cada servicio de forma autónoma.
 
-import java.io.IOException;
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+### 6.1 Microservicio Video (Node.js)
 
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+Este microservicio está desarrollado en **Node.js** y tiene como propósito principal **transmitir videos almacenados en HDFS** al frontend, **por partes**, optimizando así el rendimiento en la carga y reproducción de los mismos.
 
-public class InvertedIndexMapper extends Mapper<LongWritable, Text, Text, Text> {
+- **Ubicación**: Carpeta `server/`
+- **Puerto**: `5000`
+- **Responsabilidad principal**: Transmitir videos desde **HDFS** al cliente mediante peticiones HTTP del tipo `Range`.
 
-  private Text word = new Text();
-  private Text documentId = new Text();
-  // Patrón para fechas como DD-MM-AA o similares (ajusta si es necesario)
-  private Pattern datePattern = Pattern.compile("\\b\\d{2}-\\d{2}-\\d{2}\\b");
+#### Funcionalidades clave:
 
-  @Override
-  protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-    // Obtener el nombre del archivo
-    FileSplit fileSplit = (FileSplit) context.getInputSplit();
-    String filename = fileSplit.getPath().getName();
-    documentId.set(filename);
+- **Lectura parcial del video**:
 
-    String line = value.toString().toLowerCase();
+  - El servicio interpreta la cabecera `Range` de la petición para enviar un segmento del video.
+  - Esto permite implementar streaming eficiente sin tener que descargar el video completo.
 
-    // 1. Extraer y procesar fechas primero
-    Matcher dateMatcher = datePattern.matcher(line);
-    while (dateMatcher.find()) {
-      word.set(dateMatcher.group());
-      context.write(word, documentId);
-    }
-    // Remover fechas para no procesarlas de nuevo y limpiar caracteres no deseados
-    line = dateMatcher.replaceAll(" ");
-    line = line.replaceAll("[{}:\",]", " "); // Ignora {}, :, "", y también puntos y comas.
+- **Acceso a HDFS**:
 
-    // 2. Tokenizar el resto
-    StringTokenizer itr = new StringTokenizer(line);
-    while (itr.hasMoreTokens()) {
-      String token = itr.nextToken();
+  - Usa el cliente `webhdfs` para conectarse al sistema Hadoop y acceder a archivos de video ubicados en rutas como:
+    `/user/hadoop/inputVideos/video.mp4`.
 
-      // Verificar si el token es válido (no vacío y contiene alfanuméricos)
-      if (token.matches(".*[a-z0-9].*")) {
-        word.set(token);
-        context.write(word, documentId);
-      }
-    }
-  }
-}
+- **Manejo de errores**:
+
+  - Valida que la ruta esté dentro del directorio permitido.
+  - Si el archivo no existe en HDFS o no se puede acceder, retorna un error apropiado.
+
+#### Código clave:
+
+```js
+const hdfsClient = webhdfs.createClient({
+  user: "hadoop",
+  host: "fedora",
+  port: 9870,
+  path: "/webhdfs/v1",
+});
 ```
 
-### **2. InvertedIndexReducer.java**
-
-```java
-package com.example;
-
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Reducer;
-
-public class InvertedIndexReducer extends Reducer<Text, Text, Text, Text> {
-
-  private Text result = new Text();
-
-  @Override
-  protected void reduce(Text key, Iterable<Text> values, Context context)
-      throws IOException, InterruptedException {
-    Set<String> documentSet = new HashSet<>();
-    // Usar un Set para evitar duplicados de nombres de archivo para la misma
-    // palabra
-    for (Text val : values) {
-      documentSet.add(val.toString());
-    }
-
-    // Construir la cadena de documentos
-    StringBuilder docList = new StringBuilder();
-    boolean first = true;
-    for (String docId : documentSet) {
-      if (!first) {
-        docList.append(", ");
-      }
-      docList.append(docId);
-      first = false;
-    }
-
-    result.set(docList.toString());
-    context.write(key, result);
-  }
-}
+```js
+res.writeHead(206, headers);
+const hdfsStream = hdfsClient.createReadStream(videoPathInHDFS, streamOpts);
+hdfsStream.pipe(res);
 ```
 
-### **3. InvertedIndexDriver.java**
+Este diseño es crucial para reproducir los videos directamente desde el frontend sin descargar archivos completos.
 
-```java
-package com.example;
+### 6.2 Microservicio Spark (FastAPI + PySpark)
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.fs.FileSystem;
+Este segundo microservicio está desarrollado con **FastAPI** y utiliza **PySpark** para ejecutar consultas sobre las tablas gestionadas en Hive. Su objetivo es **proveer datos estructurados y filtrados al frontend** desde las tablas `videos_path`, `jsons` e `invertedindex`.
 
-public class InvertedIndexDriver {
+- **Ubicación**: Carpeta `spark-mcsv/`
+- **Puerto**: `4000`
+- **Responsabilidad principal**: Consultar y servir metadatos de los videos en base a filtros como entidad, prioridad o fecha.
 
-  public static void main(String[] args) throws Exception {
-    Configuration conf = new Configuration();
-    Job job = Job.getInstance(conf, "Inverted Index Hadoop 3.3.6");
+#### Características principales:
 
-    job.setJarByClass(InvertedIndexDriver.class);
-    job.setMapperClass(InvertedIndexMapper.class);
-    job.setReducerClass(InvertedIndexReducer.class);
+- **Integración con Hive**:
 
-    job.setOutputKeyClass(Text.class);
-    job.setOutputValueClass(Text.class);
+  - El microservicio levanta una sesión de Spark con soporte para Hive (`enableHiveSupport()`), lo que permite consultar directamente tablas ya existentes.
 
-    // Usar Text.class para Mapper si emite Text, Text
-    job.setMapOutputKeyClass(Text.class);
-    job.setMapOutputValueClass(Text.class);
+- **Endpoints REST**:
 
-    Path inputPath = new Path(args[0]);
-    Path outputPath = new Path(args[1]);
+  - `/videos`: Devuelve todos los registros de la tabla `videos_path`.
+  - `/jsons`: Devuelve todos los metadatos de videos desde `jsons`.
+  - `/invertedindex`: Devuelve el índice invertido (palabras clave a archivos).
+  - `/videopath/{entityname}`: Devuelve los archivos de video asociados a una entidad.
+  - `/videopath/{entityname}/orderbydate`: Devuelve los videos de una entidad ordenados por fecha descendente.
+  - `/videopath/{entityname}/noorderbydate`: Lo mismo, pero sin ordenar.
+  - `/videopath/{entityname}/priority/{priority_level}`: Devuelve videos de una entidad filtrando por prioridad (`High`, `Medium`, `Low`).
+  - `/search?q=person,car`: Búsqueda múltiple de entidades, útil para obtener videos relacionados a más de una palabra clave.
 
-    // Asegurarse de que el directorio de salida no exista
-    FileSystem fs = FileSystem.get(conf);
-    if (fs.exists(outputPath)) {
-      fs.delete(outputPath, true); // true para borrar recursivamente
-      System.out.println("Directorio de salida existente borrado: " + outputPath);
-    }
+#### Ejemplo de consulta SQL usada:
 
-    FileInputFormat.addInputPath(job, inputPath);
-    FileOutputFormat.setOutputPath(job, outputPath);
-
-    System.exit(job.waitForCompletion(true) ? 0 : 1);
-  }
-}
+```sql
+SELECT video_name, camera_id, location, priority, date, timeslots, alerts
+FROM jsons
+WHERE video_name IN ('file1.json', 'file2.json')
+ORDER BY date DESC
 ```
+
+#### Seguridad y CORS:
+
+- Se configura middleware `CORS` para permitir peticiones desde `http://localhost:5173`, donde se encuentra alojado el frontend.
+
+```python
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+```
+
+#### Ventajas:
+
+- Permite una **búsqueda eficiente** en el backend mediante Spark SQL.
+- Facilita la **filtración y ordenación** de datos sin necesidad de procesamiento en el frontend.
+- Escalable: gracias a PySpark, se puede migrar fácilmente a un clúster Hadoop si es necesario.
+
+### Arquitectura General
+
+| Microservicio | Tecnología               | Puerto | Función Principal                             |
+| ------------- | ------------------------ | ------ | --------------------------------------------- |
+| Video         | Node.js + HDFS           | 5000   | Transmitir videos por partes desde HDFS       |
+| Spark-MCSV    | FastAPI + PySpark + Hive | 4000   | Consultar datos y metadatos desde tablas Hive |
+
+Ambos servicios se comunican de forma indirecta a través del frontend, manteniendo así **desacoplamiento** y **modularidad**.
 
 ---
 
-- **InvertedIndexMapper**: Mapea cada línea de los archivos JSON, extrayendo las palabras clave y las fechas. Cada palabra o fecha se asocia con el documento en el que se encuentra.
-- **InvertedIndexReducer**: Recibe las palabras clave emitidas por el Mapper y las agrupa por documento, eliminando duplicados. Luego, construye una lista de documentos que contiene cada palabra.
-- **InvertedIndexDriver**: Es el encargado de configurar y ejecutar el trabajo de MapReduce en Hadoop, manejando los directorios de entrada y salida.
+## 7. Módulo: Cliente - Frontend
 
----
-
-### Ejecución del Índice Invertido en Hadoop
-
-Una vez configurado el flujo de trabajo y ejecutado el trabajo MapReduce en Hadoop, se genera el índice invertido basado en los archivos de metadatos de los videos (JSON). A continuación, se muestra cómo se ve el flujo de datos desde la entrada hasta la salida:
-
-#### 1. **Directorio de Entrada (Input JSON)**
-
-El directorio `/user/hadoop/output` contiene los archivos de entrada con los metadatos de los videos en formato JSON. Esta es la entrada de nuestro trabajo MapReduce, donde cada archivo JSON contiene información relevante sobre los videos. A continuación, se muestra cómo se ve este directorio:
-
-![Input JSON](.docs/inputJson.png)
-
-#### 2. **Ejecución del Comando Hadoop**
-
-El siguiente paso es la ejecución del comando Hadoop que inicia el trabajo MapReduce. Las siguientes imágenes muestran los logs de la ejecución de este proceso, donde se puede ver cómo el trabajo se lanza, los mapas y reduce completados, y las estadísticas de procesamiento.
-
-##### **Parte 1 de la Ejecución del Jar**
-
-![Ejecución del Jar - Parte 1](.docs/jar_part1.png)
-
-##### **Parte 2 de la Ejecución del Jar**
-
-![Ejecución del Jar - Parte 2](.docs/jar_par2.png)
-
-![Ejecución del Jar - Parte 2](.docs/index_app.png)
-
-#### 3. **Índice Invertido Generado**
-
-Una vez que el trabajo MapReduce ha sido ejecutado, se genera un índice invertido. Este índice lista las palabras o fechas junto con los documentos (en este caso, los archivos JSON) en los que se encuentran. A continuación se muestra un ejemplo del índice invertido generado:
-
-![Índice Invertido](.docs/indiceInvertido.png)
-
-#### 4. **Salida del Trabajo MapReduce (Output JSON)**
-
-Después de la ejecución del trabajo, los resultados se almacenan en el directorio `/user/hadoop/outputJson`. Este directorio contiene los archivos con los resultados del índice invertido, que serán procesados por el backend para análisis adicionales. A continuación, se muestra cómo se ve este directorio:
-
-![Output JSON](.docs/outputJson.png)
-
-### Resumen del Flujo
-
-1. **Archivos de Entrada**: Los archivos JSON de metadatos de los videos son cargados en el directorio `/user/hadoop/output`.
-2. **Procesamiento con Hadoop**: El trabajo MapReduce es ejecutado con el comando `hadoop jar inverted-index-1.0-SNAPSHOT.jar /user/hadoop/output /user/hadoop/outputJson`, que genera el índice invertido.
-3. **Índice Invertido**: El resultado es almacenado en el directorio `/user/hadoop/outputJson`, el cual contiene las listas de documentos indexados por cada palabra o fecha.
-
-Este proceso crea un índice eficiente para buscar y analizar las palabras o fechas en los metadatos de los videos.
-
-## 5. Módulo: Cliente - Frontend
-
-Se desarrolló una interfaz de usuario (frontend) utilizando **React**, la cual permite a los usuarios realizar búsquedas a través de una experiencia similar a la de Google.
+Se desarrolló una interfaz de usuario utilizando **React**, la cual permite a los usuarios realizar búsquedas de manera sencilla, similar a un motor de búsqueda convencional.
 
 ![Output JSON](.docs/front1.png)
 
-Al ingresar una consulta en la página inicial, se utiliza un pequeño módulo de **procesamiento de lenguaje natural (NLP)** para extraer las palabras clave. Estas se envían al servidor backend, que actúa como intermediario entre el frontend y el sistema de almacenamiento distribuido **HDFS**.
+Al ingresar una consulta en la página inicial, se emplea un pequeño módulo de **procesamiento de lenguaje natural (NLP)** que extrae las palabras clave relevantes. Estas palabras clave se envían al backend de microservicios, que se encarga de consultar los datos necesarios.
 
-El backend consulta un **índice invertido** almacenado en HDFS para determinar qué archivos JSON están asociados a los términos buscados. Luego, vuelve a acceder a HDFS para recuperar el contenido de los JSON identificados y los envía al frontend, donde se presentan en una lista de resultados.
+El frontend recibe del backend los resultados relacionados con la búsqueda, que incluyen información sobre los videos procesados.
 
 ![Output JSON](.docs/front2.png)
 
-Cada resultado incluye una previsualización del video correspondiente. Al hacer clic sobre uno, se carga el video completo usando un sistema de **streaming con cabeceras HTTP tipo "Range"**, que permite transmitir segmentos de aproximadamente 1 MB por segundo. Estos videos están almacenados directamente en HDFS y se sirven en tiempo real.
-Se implemento un frontend con React que se conecta al servidor backedn, que este se conecta con el HDFS.
-En el frontend se implemento un NLP que procesa las consultas en la pagina inciial y busca las palabras claves consultando al backend que este solicitara como DATABASE el HDFS el indice invertido. que le dara los nombres de los json, y luego vuelve a consultar al hdfs para que le retorne los json y pueda exportarlos en el frontend mediante visualizacion.
-Para la parte de carga del video se incluyo streaming con caebceras rango de bits a transmitir que carga 1mb x sec, y los videos estan siendo cargados por los videos almacenados en el HDFS.
+Cada resultado incluye una previsualización del video correspondiente. Al hacer clic en uno de ellos, se carga el video completo mediante un sistema de **streaming con cabeceras HTTP tipo "Range"**, lo que permite transmitir fragmentos de aproximadamente 1 MB por segundo.
+
+Los videos están almacenados directamente en **HDFS** y son transmitidos desde allí en tiempo real al usuario final.
 
 ![Output JSON](.docs/front3.png)
 
-### 6. Problemas y Desafios
+---
 
-1.  **Ejecutar YOLO en Cada Nodo Esclavo**
+## Ejecución del Sistema
 
-    - **Problema**: Necesitábamos ejecutar el modelo YOLO en cada nodo esclavo de Hadoop desde el nodo master.
-    - **Desafío**: Asegurar que cada nodo pueda ejecutar el modelo correctamente y de manera eficiente, sin sobrecargar la memoria ni los recursos.
+### 1. Frontend (Cliente React)
 
-2.  **Conexión entre HDFS y el Backend (Node.js)**
+Esto levantará la interfaz de usuario en modo desarrollo, generalmente accesible desde `http://localhost:5173`. En la carpeta `client`:
 
-    - **Problema**: El backend (hecho en Node.js con Express) necesitaba acceder a los archivos generados en HDFS.
-    - **Desafío**: Integrar HDFS con Node.js no es algo sencillo. Usamos bibliotecas como `hdfs` para leer los archivos desde HDFS, pero a veces hubo problemas con la conexión y el acceso concurrente.
+```bash
+npm install
+npm run dev
+```
 
-3.  **Flujo de Datos de HDFS a Backend**
+### 2. Backend (Servidor de Microservicios)
 
-    - **Problema**: El flujo de trabajo consistía en leer los archivos JSON desde HDFS y procesarlos en el backend.
-    - **Desafío**: Convertir esos archivos en un formato útil para que el backend pueda hacer las búsquedas o consultas rápidamente.
+Esto inicia el backend en modo desarrollo, que se conecta a Hive para consultar los datos y a HDFS para servir los videos. En la carpeta `server`:
 
-4.  **Optimización de las Consultas de Búsqueda**
+```bash
+npm install
+npm run dev
+```
 
-    - **Problema**: El frontend necesita hacer búsquedas rápidas por videos y objetos.
-    - **Desafío**: Al manejar grandes volúmenes de datos, las búsquedas podían ser lentas, por lo que tuvimos que optimizar cómo hacer las consultas entre el backend y HDFS.
+### 3. Procesamiento Distribuido (Spark)
 
-5.  **Integración del Backend con el Frontend (React)**
+Este comando ejecuta el módulo de procesamiento distribuido encargado de analizar los datos y generar las salidas necesarias para el sistema. En la carpeta `spark-mcsv`:
 
-    - **Problema**: El frontend en React necesitaba mostrar los resultados de las búsquedas que hace el usuario, pero estos datos vienen del backend.
-    - **Desafío**: Asegurar que la comunicación entre el backend (Express) y el frontend (React) fuera fluida y rápida para que los usuarios pudieran ver los resultados sin retrasos.
+```bash
+spark-submit main.py
+```
 
-### 7. Conclusiones
+### 4. Metastore de Hive
 
-Se logró implementar satisfactoriamente un sistema distribuido utilizando **Hadoop**, capaz de procesar tanto datos como videos de manera eficiente. A través del uso de HDFS como base de almacenamiento, se desarrolló un flujo de trabajo que permite a un cliente (frontend) realizar búsquedas y visualizar videos procesados, con apoyo de un backend que actúa como puente entre el usuario y la data en Hadoop.
+Este servicio debe estar activo para que el backend pueda acceder a las tablas de Hive correctamente. Asegúrate de que el `metastore` esté conectado a la base de datos MySQL configurada previamente. Para desplegar el metastore de Hive:
 
-Este trabajo demuestra que Hadoop puede funcionar no solo como una herramienta de procesamiento masivo, sino también como una **base de datos distribuida** central que respalda la operación de aplicaciones web completas, incluyendo análisis, recuperación de información, y transmisión multimedia.
+```bash
+hive --service metastore
+```
 
-### 8. Equipo de trabajo
+![Ejecución](.docs/backend.png)
 
-| Nombre                           | Porcentaje | Actividad realizada                                                                     |
-| -------------------------------- | ---------- | --------------------------------------------------------------------------------------- |
-| MALDONADO CASILLA, BRAULIO NAYAP | 20%        | Implementación de YOLO con procesamiento de nodos ordenado mediante MapReduce en Hadoop |
-| MOGOLLÓN CÁCERES, SERGIO DANIEL  | 20%        | Implementación del backend y conexión entre el frontend y HDFS                          |
-| PARIZACA MOZO, PAUL ANTONY       | 20%        | Implementación del índice invertido utilizando Hadoop                                   |
-| MARTÍNEZ CHOQUE, ALDO RAÚL       | 20%        | Implementación del frontend                                                             |
-| APAZA APAZA, NELZON JORGE        | 20%        | Implementación del módulo de procesamiento de lenguaje natural (NLP)                    |
+---
+
+### 7. Problemas y Desafíos
+
+1. **Ejecución de YOLO en cada nodo esclavo**
+
+   - **Problema**: La ejecución del modelo YOLO en cada nodo podía causar sobrecarga de memoria, especialmente si se procesaban varios videos en paralelo.
+   - **Desafío**: Garantizar que cada nodo pueda ejecutar el modelo de forma eficiente, con un uso mínimo de recursos, evitando que la memoria virtual del sistema se sature.
+
+2. **Conexión entre HDFS y el backend**
+
+   - **Problema**: El backend requería acceso tanto a los archivos de salida generados en HDFS como a las tablas de Hive.
+   - **Desafío**: Diseñar una integración estable entre el backend y el ecosistema Hadoop, asegurando que las rutas a archivos y datos estén correctamente sincronizadas, y que las operaciones de lectura no afecten el rendimiento.
+
+3. **Flujo de datos desde HDFS hacia el backend**
+
+   - **Problema**: Se necesitaba leer los metadatos desde Hive y asociarlos correctamente con los archivos JSON y videos almacenados en HDFS.
+   - **Desafío**: Implementar un flujo robusto y eficiente que permitiera al backend combinar ambos orígenes (Hive y HDFS), garantizando consistencia entre los datos analíticos y los archivos multimedia.
+
+4. **Optimización de las consultas de búsqueda**
+
+   - **Problema**: Las búsquedas realizadas desde el frontend podían tardar debido al volumen de datos almacenados.
+   - **Desafío**: Mejorar el rendimiento de las consultas mediante mecanismos de cacheo, estructuras de datos intermedias y consultas eficientes a Hive, de forma que se redujera el tiempo de respuesta sin comprometer la integridad de los resultados.
+
+5. **Integración del backend con el frontend (React)**
+
+   - **Problema**: El frontend requería consumir los resultados de búsqueda generados por el backend para mostrar videos y estadísticas al usuario.
+   - **Desafío**: Asegurar una comunicación fluida y de bajo tiempo de espera entre el backend (FastAPI y Node.js) y el frontend (React), manejando correctamente los formatos de respuesta, errores y tiempos de carga para una experiencia de usuario fluida.
+
+---
+
+### 8. Conclusiones
+
+Se implementó exitosamente un sistema distribuido utilizando **Hadoop**, capaz de procesar grandes volúmenes de datos y archivos de video de manera eficiente. Usando **HDFS** como base de almacenamiento, se diseñó un flujo de trabajo distribuido donde un backend basado en **FastAPI** y **Node.js** puede acceder tanto a las tablas de Hive como a los archivos de HDFS.
+
+El sistema permite al frontend realizar búsquedas dinámicas y visualizar videos procesados con anotaciones generadas por **YOLOv8**. Esto demuestra que Hadoop no solo es útil para procesamiento de datos a gran escala, sino también como una base central distribuida que soporta aplicaciones web modernas con capacidades de análisis, recuperación de información y transmisión multimedia.
+
+### 9. Equipo de trabajo
+
+| Nombre                               | Porcentaje | Actividad realizada                                                                                      |
+| ------------------------------------ | ---------- | -------------------------------------------------------------------------------------------------------- |
+| **Maldonado Casilla, Braulio Nayap** | 20%        | Implementación de YOLO para procesamiento de videos y carga de resultados a Hadoop mediante Spark y Hive |
+| **Mogollón Cáceres, Sergio Daniel**  | 20%        | Desarrollo del backend y conexión entre el frontend, Hive y HDFS                                         |
+| **Parizaca Mozo, Paul Antony**       | 20%        | Desarrollo del índice invertido utilizando Spark y almacenamiento en Hive sobre Hadoop                   |
+| **Martínez Choque, Aldo Raúl**       | 20%        | Implementación del frontend con React y diseño de la interfaz de usuario                                 |
+| **Apaza Apaza, Nelzon Jorge**        | 20%        | Implementación del módulo de procesamiento de lenguaje natural (NLP) para extracción de palabras clave   |
 
 ## License
 
